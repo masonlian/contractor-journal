@@ -2,7 +2,7 @@ package com.masonlian.thejournal.service.serviceImpl;
 
 import com.masonlian.thejournal.dao.ProjectsDao;
 import com.masonlian.thejournal.model.Project;
-import com.masonlian.thejournal.request.ProjectRequest;
+import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.service.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +25,15 @@ public class ProjectsServiceImpl implements ProjectsService {
 
         return projectsDao.getProjectById(projectId);
 
+    }
+
+    @Override
+    public void deleteProjectById(Integer projectId){
+      projectsDao.deleteProjectById(projectId);
+    }
+
+    public void updateProjectById(Integer projectId,ProjectRequest projectRequest){
+        projectsDao.updateProjectById(projectId ,projectRequest);
     }
 
 }

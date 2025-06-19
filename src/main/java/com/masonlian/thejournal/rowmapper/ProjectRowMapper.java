@@ -1,9 +1,8 @@
-package dto;
+package com.masonlian.thejournal.rowmapper;
 
 import com.masonlian.thejournal.model.Project;
 import org.springframework.jdbc.core.RowMapper;
 
-import javax.xml.transform.Result;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

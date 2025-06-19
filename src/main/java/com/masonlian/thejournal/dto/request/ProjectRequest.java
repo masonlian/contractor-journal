@@ -1,4 +1,4 @@
-package com.masonlian.thejournal.request;
+package com.masonlian.thejournal.dto.request;
 
 import java.math.BigDecimal;
 

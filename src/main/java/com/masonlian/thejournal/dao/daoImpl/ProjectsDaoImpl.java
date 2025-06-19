@@ -2,8 +2,8 @@ package com.masonlian.thejournal.dao.daoImpl;
 
 import com.masonlian.thejournal.dao.ProjectsDao;
 import com.masonlian.thejournal.model.Project;
-import com.masonlian.thejournal.request.ProjectRequest;
-import dto.ProjectRowMapper;
+import com.masonlian.thejournal.dto.request.ProjectRequest;
+import com.masonlian.thejournal.rowmapper.ProjectRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -11,7 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +63,30 @@ public class ProjectsDaoImpl implements ProjectsDao {
          if (projectList.size() > 0)
              return projectList.get(0);
          else return null;
+    }
+    @Override
+    public void deleteProjectById(Integer projectId){
+         String sql = " DELETE FROM projects WHERE project_id = :project_id" ;
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", projectId);
+         namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public void updateProjectById(Integer projectId,ProjectRequest projectRequest){
+
+         String sql= "UPDATE projects SET project_name =:project_name, owner = :owner,address = :address,budget = :budget,cost_estimate = :cost_estimate, project_manager = :project_manager, description =:description   WHERE project_id = :project_id ";
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", projectId);
+         map.put("project_name", projectRequest.getProjectName());
+         map.put("owner", projectRequest.getOwner());
+         map.put("address", projectRequest.getAddress());
+         map.put("budget", projectRequest.getBudget());
+         map.put("cost_estimate", projectRequest.getCostEstimate());
+         map.put("project_manager", projectRequest.getProjectManager());
+         map.put("description", projectRequest.getDescription());
+         namedParameterJdbcTemplate.update(sql, map);
+
     }
 
 }
