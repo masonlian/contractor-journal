@@ -12,4 +12,3 @@ SELECT
     calendar_date,
     DAYOFWEEK(calendar_date) IN (1, 7) AS is_weekend
 FROM date_gen;
-

@@ -1,0 +1,121 @@
+package com.masonlian.thejournal.model;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class Project {
+
+    private Integer projectId;
+    private String owner;
+    private String projectName;
+    private String address;
+    private String projectManager;
+    private BigDecimal budget;
+    private BigDecimal costEstimate;
+    private BigDecimal profit;
+    private BigDecimal stageProfit;
+    private Date  creationDate;
+    private Date lastModifiedDate;
+    private String description;
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public BigDecimal getBudget() {
+        return budget;
+    }
+
+    public void setBudget(BigDecimal budget) {
+        this.budget = budget;
+    }
+
+    public BigDecimal getCostEstimate() {
+        return costEstimate;
+    }
+
+    public void setCostEstimate(BigDecimal costEstimate) {
+        this.costEstimate = costEstimate;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
+
+
+    public String getProjectManager() {
+        return projectManager;
+    }
+
+    public void setProjectManager(String projectManager) {
+        this.projectManager = projectManager;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getProfit() {
+        return profit;
+    }
+
+    public void setProfit(BigDecimal profit) {
+        this.profit = profit;
+    }
+
+    public BigDecimal getStageProfit() {
+        return stageProfit;
+    }
+
+    public void setStageProfit(BigDecimal stageProfit) {
+        this.stageProfit = stageProfit;
+    }
+
+
+
+}
