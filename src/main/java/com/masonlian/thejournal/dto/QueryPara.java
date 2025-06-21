@@ -1,12 +1,24 @@
 package com.masonlian.thejournal.dto;
 
-public class ProjectQueryPara {
+import com.masonlian.thejournal.constant.Level;
 
-    Integer limit;
-    Integer offset;
-    String sort;
-    String orderBy;
-    String  search;
+public class QueryPara {
+
+    private Integer limit;
+    private Integer offset;
+    private String sort;
+    private String orderBy;
+    private  String  search;
+
+    public Level getJoblevel() {
+        return level;
+    }
+
+    public void setJoblevel(Level level) {
+        this.level = level;
+    }
+
+    private Level level;
 
     public Integer getOffset() {
         return offset;

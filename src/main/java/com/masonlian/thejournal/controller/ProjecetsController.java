@@ -1,6 +1,6 @@
 package com.masonlian.thejournal.controller;
 
-import com.masonlian.thejournal.dto.ProjectQueryPara;
+import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.service.ProjectsService;
@@ -9,12 +9,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -79,14 +77,14 @@ public class ProjecetsController {
             @RequestParam(defaultValue = "desc") String sort
     ) {
 
-            ProjectQueryPara projectQueryPara = new ProjectQueryPara();
-            projectQueryPara.setSearch(search);
-            projectQueryPara.setOrderBy(orderBy);
-            projectQueryPara.setLimit(limit);
-            projectQueryPara.setOffset(offset);
-            projectQueryPara.setSort(sort);
+            QueryPara queryPara = new QueryPara();
+            queryPara.setSearch(search);
+            queryPara.setOrderBy(orderBy);
+            queryPara.setLimit(limit);
+            queryPara.setOffset(offset);
+            queryPara.setSort(sort);
 
-            List <Project> projectList =  projectsService.getProjects(projectQueryPara);
+            List <Project> projectList =  projectsService.getProjects(queryPara);
 
             Page<Project> projectPage = new Page<>();
             projectPage.setTotal(projectList.size());

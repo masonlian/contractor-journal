@@ -1,7 +1,7 @@
 package com.masonlian.thejournal.dao.daoImpl;
 
 import com.masonlian.thejournal.dao.ProjectsDao;
-import com.masonlian.thejournal.dto.ProjectQueryPara;
+import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.rowmapper.ProjectRowMapper;
@@ -91,7 +91,7 @@ public class ProjectsDaoImpl implements ProjectsDao {
     }
 
     @Override
-    public List<Project> getProjects(ProjectQueryPara projectQueryPara){
+    public List<Project> getProjects(QueryPara queryPara){
 
          String sql = " SELECT  project_id, owner, project_name, address ,project_manager ,description, budget , profit, cost_estimate, created_date, last_modified_date, stage_profit "
                  + " FROM projects WHERE 1=1";
@@ -99,13 +99,13 @@ public class ProjectsDaoImpl implements ProjectsDao {
          Map<String ,Object> map = new HashMap();//接著思考根據什麼傳入搜尋條件。
 
          sql = sql+ " AND address LIKE :search";
-         map.put("search","%" + projectQueryPara.getSearch()+ "%");
+         map.put("search","%" + queryPara.getSearch()+ "%");
 
-         sql = sql + " ORDER BY "+projectQueryPara.getOrderBy()+ " " +projectQueryPara.getSort();
+         sql = sql + " ORDER BY "+ queryPara.getOrderBy()+ " " + queryPara.getSort();
          sql = sql + " LIMIT :limit OFFSET :offset";
 
-         map.put("limit",projectQueryPara.getLimit());
-         map.put("offset",projectQueryPara.getOffset());
+         map.put("limit", queryPara.getLimit());
+         map.put("offset", queryPara.getOffset());
 
 
          List<Project> projectList = namedParameterJdbcTemplate.query(sql,map,new ProjectRowMapper());
