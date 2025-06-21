@@ -3,6 +3,10 @@ package com.masonlian.thejournal.dto;
 public class ProjectQueryPara {
 
     Integer limit;
+    Integer offset;
+    String sort;
+    String orderBy;
+    String  search;
 
     public Integer getOffset() {
         return offset;
@@ -44,11 +48,4 @@ public class ProjectQueryPara {
         this.search = search;
     }
 
-    Integer offset;
-
-    String sort;
-    String orderBy;
-
-
-    String  search;
 }

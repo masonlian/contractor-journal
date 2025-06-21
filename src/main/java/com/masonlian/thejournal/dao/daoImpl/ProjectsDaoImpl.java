@@ -1,6 +1,7 @@
 package com.masonlian.thejournal.dao.daoImpl;
 
 import com.masonlian.thejournal.dao.ProjectsDao;
+import com.masonlian.thejournal.dto.ProjectQueryPara;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.rowmapper.ProjectRowMapper;
@@ -73,20 +74,42 @@ public class ProjectsDaoImpl implements ProjectsDao {
     }
 
     @Override
-    public void updateProjectById(Integer projectId,ProjectRequest projectRequest){
+    public void updateProjectById(Integer projectId,ProjectRequest projectRequest) {
 
-         String sql= "UPDATE projects SET project_name =:project_name, owner = :owner,address = :address,budget = :budget,cost_estimate = :cost_estimate, project_manager = :project_manager, description =:description   WHERE project_id = :project_id ";
-         Map<String, Object> map = new HashMap();
-         map.put("project_id", projectId);
-         map.put("project_name", projectRequest.getProjectName());
-         map.put("owner", projectRequest.getOwner());
-         map.put("address", projectRequest.getAddress());
-         map.put("budget", projectRequest.getBudget());
-         map.put("cost_estimate", projectRequest.getCostEstimate());
-         map.put("project_manager", projectRequest.getProjectManager());
-         map.put("description", projectRequest.getDescription());
-         namedParameterJdbcTemplate.update(sql, map);
+        String sql = "UPDATE projects SET project_name =:project_name, owner = :owner,address = :address,budget = :budget,cost_estimate = :cost_estimate, project_manager = :project_manager, description =:description   WHERE project_id = :project_id ";
+        Map<String, Object> map = new HashMap();
+        map.put("project_id", projectId);
+        map.put("project_name", projectRequest.getProjectName());
+        map.put("owner", projectRequest.getOwner());
+        map.put("address", projectRequest.getAddress());
+        map.put("budget", projectRequest.getBudget());
+        map.put("cost_estimate", projectRequest.getCostEstimate());
+        map.put("project_manager", projectRequest.getProjectManager());
+        map.put("description", projectRequest.getDescription());
+        namedParameterJdbcTemplate.update(sql, map);
 
+    }
+
+    @Override
+    public List<Project> getProjects(ProjectQueryPara projectQueryPara){
+
+         String sql = " SELECT  project_id, owner, project_name, address ,project_manager ,description, budget , profit, cost_estimate, created_date, last_modified_date, stage_profit "
+                 + " FROM projects WHERE 1=1";
+
+         Map<String ,Object> map = new HashMap();//接著思考根據什麼傳入搜尋條件。
+
+         sql = sql+ " AND address LIKE :search";
+         map.put("search","%" + projectQueryPara.getSearch()+ "%");
+
+         sql = sql + " ORDER BY "+projectQueryPara.getOrderBy()+ " " +projectQueryPara.getSort();
+         sql = sql + " LIMIT :limit OFFSET :offset";
+
+         map.put("limit",projectQueryPara.getLimit());
+         map.put("offset",projectQueryPara.getOffset());
+
+
+         List<Project> projectList = namedParameterJdbcTemplate.query(sql,map,new ProjectRowMapper());
+         return projectList;
     }
 
 }
