@@ -33,10 +33,14 @@ public class UserServiceImpl implements UserService {
     public User logIn(UserLogInRequest userLogInRequest) {
 
         User user = userDao.getUserByEmail(userLogInRequest.getEmail());
+
                 if (user.getEmail()==null)
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-                if (user.getPassword().equals(userLogInRequest.getPassword()))
-                   return user;
+                if (user.getPassword().equals(userLogInRequest.getPassword())) {
+
+                    userDao.lastLoginTime(userLogInRequest);
+                    return user;
+                }
                 else
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }

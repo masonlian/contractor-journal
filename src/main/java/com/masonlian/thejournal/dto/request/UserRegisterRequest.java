@@ -1,5 +1,7 @@
 package com.masonlian.thejournal.dto.request;
 
+import com.masonlian.thejournal.constant.Level;
+
 public class UserRegisterRequest {
     public String getEmail() {
         return email;
@@ -19,4 +21,14 @@ public class UserRegisterRequest {
 
     private String email;
     private String password;
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    private String level;
 }

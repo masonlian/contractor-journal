@@ -1,5 +1,7 @@
 package com.masonlian.thejournal.dto.request;
 
+import java.sql.Timestamp;
+
 public class UserLogInRequest {
     public String getEmail() {
         return email;
@@ -19,4 +21,15 @@ public class UserLogInRequest {
 
     private String email;
     private String password;
+
+
+    public Timestamp getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Timestamp lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
+
+    private Timestamp lastLoginTime;
 }

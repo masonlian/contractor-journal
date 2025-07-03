@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 @RestController
 public class UserController {
 
@@ -28,9 +31,14 @@ public class UserController {
 
   }
 
-  @PostMapping("login")
+  @PostMapping("/users/login")
   public ResponseEntity<User> logIn( @RequestBody  @Valid UserLogInRequest userLogInRequest){
+
+     Timestamp now = new Timestamp(System.currentTimeMillis());
+
+     userLogInRequest.setLastLoginTime(now);
      User user=  userService.logIn(userLogInRequest);
+
      return ResponseEntity.status(HttpStatus.OK).body(user);
 
   }

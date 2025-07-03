@@ -1,13 +1,52 @@
 package com.masonlian.thejournal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.masonlian.thejournal.constant.Level;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-import java.security.PrivateKey;
-import java.security.Timestamp;
+import java.sql.Timestamp;
+
 
 public class User {
+
     private Integer userId;
+    @JsonProperty
     private String email;
+    @JsonIgnore
+    private String password;
+    private Level level;
+    private Timestamp createdTime;
+    public Timestamp getLastModifiedTime() {
+        return lastModifiedTime;
+    }
+
+    public void setLastModifiedTime(Timestamp lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
+    }
+
+    private Timestamp lastModifiedTime;
+    private Timestamp lastLoginTime;
+
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Timestamp lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
+
+
 
     public Integer getUserId() {
         return userId;
@@ -41,31 +80,5 @@ public class User {
         this.level = level;
     }
 
-    public Timestamp getCreatedTime() {
-        return createdTime;
-    }
 
-    public void setCreatedTime(Timestamp createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public Timestamp getLastModifiedTime() {
-        return lastModifiedTime;
-    }
-
-    public void setLastModifiedTime(Timestamp lastModifiedTime) {
-        this.lastModifiedTime = lastModifiedTime;
-    }
-
-    private String password;
-    private Level level;
-    private Timestamp createdTime;
-    private Timestamp lastModifiedTime;
-
-    public void setCreatedTime(java.sql.Timestamp createdTime) {
-    }
-
-    public void setLastModifiedTime(java.sql.Timestamp lastModifiedTime) {
-
-    }
 }
