@@ -1,4 +1,4 @@
-INSERT INTO note_calender (calendar_date, is_weekend)
+INSERT INTO calender (calendar_date, is_weekend)
 
 WITH RECURSIVE date_gen (calendar_date) AS (
     SELECT DATE('2025-06-01') AS calendar_date

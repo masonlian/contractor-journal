@@ -1,6 +1,10 @@
 package com.masonlian.thejournal.dto;
 
+import com.masonlian.thejournal.constant.ConstructionCategory;
 import com.masonlian.thejournal.constant.Level;
+import com.masonlian.thejournal.constant.MediaType;
+
+import java.util.Date;
 
 public class QueryPara {
 
@@ -9,6 +13,44 @@ public class QueryPara {
     private String sort;
     private String orderBy;
     private  String  search;
+    private Level level;
+    private MediaType mediaType;
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
+    public Date getCalendarDate() {
+        return calendarDate;
+    }
+
+    public void setCalendarDate(Date calendarDate) {
+        this.calendarDate = calendarDate;
+    }
+
+    private Date calendarDate;
+
+    public ConstructionCategory getConstructionCategory() {
+        return constructionCategory;
+    }
+
+    public void setConstructionCategory(ConstructionCategory constructionCategory) {
+        this.constructionCategory = constructionCategory;
+    }
+
+    public MediaType getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    private ConstructionCategory constructionCategory;
 
     public Level getJoblevel() {
         return level;
@@ -18,7 +60,7 @@ public class QueryPara {
         this.level = level;
     }
 
-    private Level level;
+
 
     public Integer getOffset() {
         return offset;
