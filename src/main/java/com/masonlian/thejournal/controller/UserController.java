@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,6 @@ public class UserController {
   public ResponseEntity<User> logIn( @RequestBody  @Valid UserLogInRequest userLogInRequest){
 
      Timestamp now = new Timestamp(System.currentTimeMillis());
-
      userLogInRequest.setLastLoginTime(now);
      User user=  userService.logIn(userLogInRequest);
 

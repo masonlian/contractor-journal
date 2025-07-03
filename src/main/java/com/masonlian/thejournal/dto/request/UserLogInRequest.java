@@ -1,8 +1,12 @@
 package com.masonlian.thejournal.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotNull;
+
 import java.sql.Timestamp;
 
 public class UserLogInRequest {
+
     public String getEmail() {
         return email;
     }
@@ -19,6 +23,7 @@ public class UserLogInRequest {
         this.password = password;
     }
 
+    @NotNull
     private String email;
     private String password;
 
