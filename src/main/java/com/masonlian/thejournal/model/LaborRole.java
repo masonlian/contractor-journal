@@ -1,11 +1,35 @@
 package com.masonlian.thejournal.model;
 
+import com.masonlian.thejournal.constant.Level;
+import com.masonlian.thejournal.constant.Role;
+
 import java.math.BigDecimal;
 
-public class Employee {
+public class LaborRole {
 
     private Integer employeeId;;
     private String name;
+    private BigDecimal wage;
+    private String imageUrl;
+    private String phoneNumber;
+    private Level level;
+    private Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }
 
     public BigDecimal getWage() {
         return wage;
@@ -46,11 +70,6 @@ public class Employee {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
-    private BigDecimal wage;
-    private String imageUrl;
-    private String phoneNumber;
-
 
 
 

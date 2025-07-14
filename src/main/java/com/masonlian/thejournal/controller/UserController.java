@@ -22,6 +22,8 @@ public class UserController {
   @Autowired
   private UserService userService;
 
+
+  //帳號註冊功能
   @PostMapping("register")
   public ResponseEntity<User> register(@RequestBody UserRegisterRequest userRegisterRequest) {
 
@@ -32,6 +34,7 @@ public class UserController {
 
   }
 
+  //帳號登入功能
   @PostMapping("/users/login")
   public ResponseEntity<User> logIn( @RequestBody  @Valid UserLogInRequest userLogInRequest){
 

@@ -2,7 +2,7 @@ package com.masonlian.thejournal.dto.request;
 
 import java.math.BigDecimal;
 
-public class EmployeeRequest {
+public class LaborEventQueryRequest {
 
     private String name;
     private BigDecimal wage;

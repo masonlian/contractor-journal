@@ -2,10 +2,23 @@ package com.masonlian.thejournal.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
-public class UserLogInRequest {
+public class UserLogInRequest  {
+
+
+    @NotNull
+    private String email;
+    private String password;
+
+
+
 
     public String getEmail() {
         return email;
@@ -22,11 +35,6 @@ public class UserLogInRequest {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    @NotNull
-    private String email;
-    private String password;
-
 
     public Timestamp getLastLoginTime() {
         return lastLoginTime;

@@ -2,9 +2,10 @@ package com.masonlian.thejournal.dao.daoImpl;
 
 import com.masonlian.thejournal.dao.CalendarDao;
 import com.masonlian.thejournal.dto.QueryPara;
-import com.masonlian.thejournal.dto.request.CalendarEventRequest;
-import com.masonlian.thejournal.model.CalendarEvent;
+import com.masonlian.thejournal.dto.request.*;
+import com.masonlian.thejournal.model.*;
 import com.masonlian.thejournal.rowmapper.CalendarEventRowMapper;
+import com.masonlian.thejournal.rowmapper.MaterialEventRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,7 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class CalendarDaoImpl implements CalendarDao {
 
 
     @Override
-    public List<CalendarEvent> getCalendarEventsByDate(QueryPara calendarQueryPara){
+    public List<CalendarEvent> getCalendarEventsByDate(QueryPara calendarQueryPara) {
 
         //透過date這個欄位調取event table連接到跟calendar table 回傳一個List的格式給controller層
 
@@ -87,13 +88,165 @@ public class CalendarDaoImpl implements CalendarDao {
         Map<String, Object> map = new HashMap<>();
         map.put("calendar_date", calendarQueryPara.getCalendarDate());
 
-        sql= sql+"LIMIT :limit OFFSET :offset";
+        sql = sql + "LIMIT :limit OFFSET :offset";
         map.put("limit", calendarQueryPara.getLimit());
         map.put("offset", calendarQueryPara.getOffset());
-        List<CalendarEvent> calendarEventList= namedParameterJdbcTemplate.query(sql, map, new CalendarEventRowMapper());
-        if(calendarEventList.size()>0)
+        List<CalendarEvent> calendarEventList = namedParameterJdbcTemplate.query(sql, map, new CalendarEventRowMapper());
+        if (calendarEventList.size() > 0)
             return calendarEventList;
         else return null;
+
+    }
+
+    @Override
+    public void createLaborEvent(Integer eventId ,List<LaborRole> laborRoleList){
+
+
+
+        for (LaborRole laborRole : laborRoleList) {
+            String sql = "INSERT labor_event (event_id, name ) VALUES ( :event_id, :name) ";
+            Map<String, Object> map = new HashMap<>();
+
+            map.put("event_id", eventId);
+            map.put("name", laborRole.getName());
+
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
         }
+
+
+    }
+
+    @Override
+    public void updateWagePerDay(Integer eventId, BigDecimal totalAmount) {
+
+        String sql = "UPDATE calendar_events SET wage_per_day = :wage_per_day WHERE event_id = :event_id  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("event_id", eventId);
+        map.put("wage_per_day", totalAmount);
+        namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public void createMaterialEvent(Integer eventId, List<MaterialEvent> materialEventList) {
+
+        String sql= "INSERT  material_events ( event_id, material_name, unit, amount) VALUE ( event_id, material_name, unit, amount)";
+
+
+        MapSqlParameterSource[] mapSqlParameterSource = new MapSqlParameterSource[materialEventList.size()];
+        for(int i = 0;i<materialEventList.size();i++){
+           MaterialEvent materialEvent = materialEventList.get(i);
+
+
+           mapSqlParameterSource[i] = new MapSqlParameterSource();
+           mapSqlParameterSource[i].addValue("event_id", eventId);
+           mapSqlParameterSource[i].addValue("unit", materialEvent.getUnit());
+           mapSqlParameterSource[i].addValue("material_name", materialEvent.getMaterialName());
+           mapSqlParameterSource[i].addValue("amount", materialEvent.getAmount());
+
+
+           namedParameterJdbcTemplate.batchUpdate(sql, mapSqlParameterSource);
+        }
+
+
+    }
+
+    @Override
+    public void updateMaterialCost(Integer eventId,BigDecimal totalAmount){
+        String sql = "UPDATE material_events SET material_cost = :material_cost WHERE event_id = :event_id   ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("material_cost", totalAmount);
+        map.put("event_id", eventId);
+        namedParameterJdbcTemplate.update(sql, map);
+
+    }
+
+    @Override
+    public  List<LaborRole> getAttendancesList(Integer eventId){
+
+        String sql = " SELECT name,attend From calendar_events WHERE event_id = :event_id  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("event_id", eventId);
+        List<LaborRole> attendanceList =  namedParameterJdbcTemplate.query(sql,map, new CalendarEventRowMapper());
+        if (attendanceList.size() > 0){
+            return attendanceList;
+        }
+        else return null;
+
+    }
+    @Override
+    public void updateLaborEvent(Integer eventID ,LaborEvent laborEvent){
+
+        String sql = "UPDATE calendar_events SET attend=:attend WHERE name = :name and event_id = :event_id  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", laborEvent.getName());
+        map.put("attend",laborEvent.isAttend());
+        namedParameterJdbcTemplate.update(sql, map);
+
+    }
+
+    @Override
+    public void deleteLaborEvent(Integer eventId){
+
+        String sql = "DELETE  FROM calendar_events WHERE event_id = :event_id  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("event_id", eventId);
+        namedParameterJdbcTemplate.update(sql, map);
+
+    }
+
+    @Override
+    public void attendanceCheck(LaborRole laborRole, AttendanceRequest attendanceRequest){
+
+        String sql = " UPDATE labor_event SET attendance = :attendance WHERE name= :name ";
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("name", laborRole.getName());
+        map.put("attendance", attendanceRequest.getAttendance());
+
+        namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public void updateDailyExpenses(Integer eventId,BigDecimal newExpenses){
+
+        String sql = " UPDATE calendar_events SET daily_expenses = :daily_expenses WHERE event_id = :event_id     ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("daily_expenses", newExpenses);
+        namedParameterJdbcTemplate.update(sql, map);
+
+
+    }
+
+    @Override
+    public List<MaterialEvent> getMaterialUsedById(Integer eventId){
+
+        String sql = " SELECT material_name ,unit, amount, material_events_id FROM material_events WHERE event_id = :event_id  ";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("event_id", eventId);
+        List <MaterialEvent> userdList = namedParameterJdbcTemplate.query(sql,map,new MaterialEventRowMapper());
+        if (userdList.size() > 0){
+            return userdList;
+        }
+        else return null;
+
+
+    }
+
+    @Override
+    public void  updateMaterialEvent(Integer eventId,MaterialEvent materialEvent){
+
+        String sql = "UPDATE material_events SET unit=:unit, amount =:amount WHERE event_id = :event_id AND material_name = :material_name   ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("material_name", materialEvent.getMaterialName());
+        map.put("unit", materialEvent.getUnit());
+        map.put("amount", materialEvent.getAmount());
+        map.put("event_id", eventId);
+        namedParameterJdbcTemplate.update(sql, map);
+
+
+    }
+
 
 }

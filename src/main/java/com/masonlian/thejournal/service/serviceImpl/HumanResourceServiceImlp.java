@@ -2,11 +2,10 @@ package com.masonlian.thejournal.service.serviceImpl;
 
 import com.masonlian.thejournal.dao.HumanResourceDao;
 import com.masonlian.thejournal.dto.QueryPara;
-import com.masonlian.thejournal.dto.request.EmployeeRequest;
-import com.masonlian.thejournal.model.Employee;
+import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
+import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.service.HumanResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,20 +18,20 @@ public class HumanResourceServiceImlp implements HumanResourceService {
 
 
     @Override
-    public Integer createProfile(EmployeeRequest employeeRequest) {
+    public Integer createProfile(LaborEventQueryRequest laborEventQueryRequest) {
 
-        return humanResourceDao.createProfile(employeeRequest);
+        return humanResourceDao.createProfile(laborEventQueryRequest);
 
     }
 
     @Override
-    public Employee getEmployeeById(Integer employeeId) {
+    public LaborRole getEmployeeById(Integer employeeId) {
 
         return humanResourceDao.getEmployeeById(employeeId);
     }
 
     @Override
-    public List<Employee> getEmployees(QueryPara employeeQueryPara) {
+    public List<LaborRole> getEmployees(QueryPara employeeQueryPara) {
 
         return humanResourceDao.getEmployees(employeeQueryPara);
 
@@ -45,8 +44,8 @@ public class HumanResourceServiceImlp implements HumanResourceService {
 
     }
     @Override
-    public void  updateProfileById (Integer employeeId,EmployeeRequest employeeRequest){
+    public void  updateProfileById (Integer employeeId, LaborEventQueryRequest laborEventQueryRequest){
 
-      humanResourceDao.updateProfileById(employeeId,employeeRequest );
+      humanResourceDao.updateProfileById(employeeId, laborEventQueryRequest);
     }
 }

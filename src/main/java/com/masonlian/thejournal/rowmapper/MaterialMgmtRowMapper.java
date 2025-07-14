@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CostMgmtRowMapper implements RowMapper {
+public class MaterialMgmtRowMapper implements RowMapper {
 
     public Material mapRow(ResultSet rs, int rowNum) throws SQLException {
 

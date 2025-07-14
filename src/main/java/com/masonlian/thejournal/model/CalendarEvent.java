@@ -21,6 +21,48 @@ public class CalendarEvent {
     private BigDecimal dailyExpenses;
     private String notation;
     private Integer eventId;
+    private Timestamp eventDate;
+    private BigDecimal incidentalExpenses;
+
+    public BigDecimal getWagePerDay() {
+        return wagePerDay;
+    }
+
+    public void setWagePerDay(BigDecimal wagePerDay) {
+        this.wagePerDay = wagePerDay;
+    }
+
+    public BigDecimal getIncidentalExpenses() {
+        return incidentalExpenses;
+    }
+
+    public void setIncidentalExpenses(BigDecimal incidentalExpenses) {
+        this.incidentalExpenses = incidentalExpenses;
+    }
+
+    public BigDecimal getMaterialCost() {
+        return materialCost;
+    }
+
+    public void setMaterialCost(BigDecimal materialCost) {
+        this.materialCost = materialCost;
+    }
+
+    private BigDecimal wagePerDay;
+    private BigDecimal materialCost;
+
+
+
+
+    public Boolean getIncidentalExpense() {
+        return incidentalExpense;
+    }
+
+    public void setIncidentalExpense(Boolean incidentalExpense) {
+        this.incidentalExpense = incidentalExpense;
+    }
+
+    private Boolean incidentalExpense;
 
     public Boolean getIs_weekend() {
         return is_weekend;
@@ -41,7 +83,7 @@ public class CalendarEvent {
         this.eventDate = eventDate;
     }
 
-    private Timestamp eventDate;
+
 
 
     public Integer getEventId() {

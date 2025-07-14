@@ -18,6 +18,16 @@ public class Project {
     private Date lastModifiedDate;
     private String description;
 
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    private BigDecimal balance;
+
     public String getOwner() {
         return owner;
     }

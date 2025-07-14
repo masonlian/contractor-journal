@@ -1,6 +1,7 @@
 package com.masonlian.thejournal.service.serviceImpl;
 
 import com.masonlian.thejournal.dao.UserDao;
+import com.masonlian.thejournal.dto.CustomUserDetails;
 import com.masonlian.thejournal.dto.request.UserLogInRequest;
 import com.masonlian.thejournal.dto.request.UserRegisterRequest;
 import com.masonlian.thejournal.model.User;
@@ -8,9 +9,17 @@ import com.masonlian.thejournal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class UserServiceImpl implements UserService {
@@ -49,13 +58,26 @@ public class UserServiceImpl implements UserService {
 
                 if (user.getEmail()==null)
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-                if ( passwordEncoder.matches(userLogInRequest.getPassword(),user.getPassword())) {
+                if (passwordEncoder.matches(userLogInRequest.getPassword(),user.getPassword())) {
+
+                    CustomUserDetails customUserDetails= new CustomUserDetails(user);
+
+                    Authentication auth = new UsernamePasswordAuthenticationToken(
+                            customUserDetails,
+                            null,
+                            customUserDetails.getAuthorities()
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(auth);
 
                     userDao.lastLoginTime(userLogInRequest);
+
+
                     return user;
                 }
                 else
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
+
+
 
 }

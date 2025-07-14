@@ -13,6 +13,26 @@ public class CalendarEventRequest {
     private BigDecimal dailyExpenses;
     private String notation;
 
+    public BigDecimal getIncidentalExpenses() {
+        return incidentalExpenses;
+    }
+
+    public void setIncidentalExpenses(BigDecimal incidentalExpenses) {
+        this.incidentalExpenses = incidentalExpenses;
+    }
+
+    private BigDecimal incidentalExpenses;
+
+    public Integer getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(Integer eventId) {
+        this.eventId = eventId;
+    }
+
+    private Integer eventId;
+
     public Timestamp getEventDate() {
         return eventDate;
     }

@@ -5,11 +5,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.masonlian.thejournal.constant.Level;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
 
-public class User {
+public class User  {
 
     private Integer userId;
     @JsonProperty
@@ -28,6 +33,16 @@ public class User {
 
     private Timestamp lastModifiedTime;
     private Timestamp lastLoginTime;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private String name;
 
 
     public Timestamp getCreatedTime() {
@@ -79,6 +94,5 @@ public class User {
     public void setLevel(Level level) {
         this.level = level;
     }
-
 
 }

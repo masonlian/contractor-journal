@@ -2,8 +2,8 @@ package com.masonlian.thejournal.controller;
 
 import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.dto.QueryPara;
-import com.masonlian.thejournal.dto.request.EmployeeRequest;
-import com.masonlian.thejournal.model.Employee;
+import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
+import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.service.HumanResourceService;
 import com.masonlian.thejournal.util.Page;
 import jakarta.validation.constraints.Max;
@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,23 +22,25 @@ public class HumanResourceController {
     @Autowired
     HumanResourceService humanResourceService;
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("h-resource")
-    public ResponseEntity<Employee>  createProfile(@RequestBody EmployeeRequest employeeRequest) {
+    public ResponseEntity<LaborRole>  createProfile(@RequestBody LaborEventQueryRequest laborEventQueryRequest) {
 
-        Integer employeeId= humanResourceService.createProfile(employeeRequest);
-        Employee employee = humanResourceService.getEmployeeById(employeeId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(employee);
+        Integer employeeId= humanResourceService.createProfile(laborEventQueryRequest);
+        LaborRole laborRole = humanResourceService.getEmployeeById(employeeId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(laborRole);
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @GetMapping("profiles")
-    public ResponseEntity<Page<Employee>> getEmployees(@RequestParam (required = false) String search,
-                                                       @RequestParam  (required = false) Level level,
+    public ResponseEntity<Page<LaborRole>> getEmployees(@RequestParam (required = false) String search,
+                                                        @RequestParam  (required = false) Level level,
 
-                                                       @RequestParam (defaultValue = "0") @Min(0) int offset,
-                                                       @RequestParam (name="limit",defaultValue = "5") @Max(100)@Min(0) int limit,
+                                                        @RequestParam (defaultValue = "0") @Min(0) int offset,
+                                                        @RequestParam (name="limit",defaultValue = "5") @Max(100)@Min(0) int limit,
 
-                                                       @RequestParam (defaultValue = " wage ") String orderBy,
-                                                       @RequestParam(defaultValue = " desc") String sort
+                                                        @RequestParam (defaultValue = " wage ") String orderBy,
+                                                        @RequestParam(defaultValue = " desc") String sort
     ) {
 
        QueryPara employeeQuery =  new QueryPara();
@@ -50,32 +53,34 @@ public class HumanResourceController {
        employeeQuery.setOrderBy(orderBy);
        employeeQuery.setSort(sort);
 
-       List< Employee> employeeList = humanResourceService.getEmployees(employeeQuery);
+       List<LaborRole> laborRoleList = humanResourceService.getEmployees(employeeQuery);
 
-       Page<Employee> employeePage = new Page<>();
-       employeePage.setTotal(employeeList.size());
+       Page<LaborRole> employeePage = new Page<>();
+       employeePage.setTotal(laborRoleList.size());
        employeePage.setOffset(offset);
        employeePage.setLimit(limit);
-       employeePage.setResult(employeeList);
+       employeePage.setResult(laborRoleList);
 
        return ResponseEntity.status(HttpStatus.OK).body(employeePage);
 
 
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @DeleteMapping("/layoff/{employeeId}")
-    public ResponseEntity<Employee> deleteProfile(@PathVariable Integer employeeId) {
+    public ResponseEntity<LaborRole> deleteProfile(@PathVariable Integer employeeId) {
 
         humanResourceService.deleteProfileById(employeeId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/update/{employeeId}")
-    public ResponseEntity<Employee> updateProfileById(@PathVariable Integer employeeId,
-                                                      @RequestBody EmployeeRequest employeeRequest) {
+    public ResponseEntity<LaborRole> updateProfileById(@PathVariable Integer employeeId,
+                                                       @RequestBody LaborEventQueryRequest laborEventQueryRequest) {
 
-        humanResourceService.updateProfileById(employeeId,employeeRequest);
+        humanResourceService.updateProfileById(employeeId, laborEventQueryRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
 
 

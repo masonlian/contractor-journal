@@ -1,9 +1,13 @@
 package com.masonlian.thejournal.dao.daoImpl;
 
 import com.masonlian.thejournal.dao.CostMgmtDao;
+import com.masonlian.thejournal.dto.QueryPara;
+import com.masonlian.thejournal.dto.request.ConstructionRequest;
 import com.masonlian.thejournal.dto.request.MaterialRequest;
+import com.masonlian.thejournal.model.Construction;
 import com.masonlian.thejournal.model.Material;
-import com.masonlian.thejournal.rowmapper.CostMgmtRowMapper;
+import com.masonlian.thejournal.rowmapper.ConstructionRowMapper;
+import com.masonlian.thejournal.rowmapper.MaterialMgmtRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -46,11 +50,11 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
     @Override
     public Material getMaterialById (Integer materialId){
 
-        String sql= "SELECT :material_type, :unit_price, :image_url, :specification, :material_name  FROM material WHERE material_id = :material_id  ";
+        String sql= "SELECT material_type, unit_price, image_url, specification, material_name  FROM material WHERE material_id = :material_id  ";
 
         Map<String, Object> map = new HashMap<>();
         map.put("material_id", materialId);
-        List <Material> materialList = namedParameterJdbcTemplate.query(sql,map, new CostMgmtRowMapper());
+        List <Material> materialList = namedParameterJdbcTemplate.query(sql,map, new MaterialMgmtRowMapper());
         if(materialList.size() >0)
             return materialList.get(0);
         return null;
@@ -79,4 +83,137 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
         map.put("material_name", materialRequest.getMaterialName());
         namedParameterJdbcTemplate.update(sql, map);
     }
+
+    @Override
+    public Material getMaterialByName(String materialName) {
+
+        String sql = "SELECT material_id, material_type, unit_price, image_url, specification WHERE material_name = :material_name  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("material_name", materialName);
+        List<Material> materialList = namedParameterJdbcTemplate.query(sql, map, new MaterialMgmtRowMapper());
+        if(materialList.size() >0)
+            return materialList.get(0);
+        else return null;
+    }
+    @Override
+    public Integer createConstruction(ConstructionRequest constructionRequest){
+        String sql =  "INSERT construction ( construction_item, construction_spec, construction_estimate, media_repository_category ) VALUES ( :construction_item, :construction_spec, :construction_estimate, :media_repository_category) WHERE construction_id = :construction_id  ";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("construction_item", constructionRequest.getConstructionItem());
+        map.put("construction_spec", constructionRequest.getConstructionSpec());
+        map.put("construction_estimate", constructionRequest.getConstructionEstimate());
+        map.put("media_repository_category", constructionRequest.getMediaRepositoryCategory());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map),  keyHolder);
+        Integer constructionId = keyHolder.getKey().intValue();
+        return constructionId;
+
+
+    }
+
+    @Override
+    public Construction getConstructionById(Integer constructionId){
+
+        String sql =   " SELECT (construction_item, construction_spec, construction_estimate, media_repository_category) FROM construction WHERE  construction_id = :construction_id   ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("construction_id", constructionId);
+
+        List<Construction>  constructionList =  namedParameterJdbcTemplate.query(sql,map, new ConstructionRowMapper());
+        if(constructionList.size() >0)
+            return constructionList.get(0);
+        else return null;
+
+
+    }
+
+    @Override
+    public void deleteConstructionById(Integer constructionId) {
+
+        String sql = "DELETE FROM  construction WHERE  construction_id = :construction_id    ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("construction_id", constructionId);
+        namedParameterJdbcTemplate.update(sql, map);
+
+    }
+
+    @Override
+    public void updateConstructionBydId (Integer constructionId,ConstructionRequest constructionRequest){
+
+        String sql = "UPDATE construction SET construction_item = :construction_item ,construction_spec = :construction_spec, construction_estimate = :construction_estimate, media_repository_category = :media_repository_category WHERE construction_id = :construction_id   ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("construction_id", constructionId);
+        map.put("construction_item", constructionRequest.getConstructionItem());
+        map.put("construction_spec", constructionRequest.getConstructionSpec());
+        map.put("construction_estimate", constructionRequest.getConstructionEstimate());
+        map.put("media_repository_category", constructionRequest.getMediaRepositoryCategory());
+        namedParameterJdbcTemplate.update(sql, map);
+
+    }
+    @Override
+    public List<Material> getMaterials(QueryPara queryPara){
+
+        String sql = "SELECT * FROM material WHERE 1=1 ";
+        Map<String, Object> map = new HashMap<>();
+
+        if(queryPara.getConstructionCategory() != null)
+        sql = sql + " construction_category = :construction_category ";
+        map.put("construction_category", queryPara.getConstructionCategory());
+        if(queryPara.getSearch() != null)
+        sql = sql + " AND  material_name LIKE :search ";
+        map.put("search", queryPara.getSearch());
+
+        sql = sql + " ORDER BY "+queryPara.getOrderBy() + " " +queryPara.getSort();
+
+        sql= sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit", queryPara.getLimit());
+        map.put("offset", queryPara.getOffset());
+
+        List<Material> materialList =  namedParameterJdbcTemplate.query(sql, map, new MaterialMgmtRowMapper());
+        if(materialList.size() >0)
+            return materialList;
+        else return null;
+        }
+
+
+
+ public List<Construction> getConstructionItems(QueryPara queryPara) {
+
+     String sql = "SELECT * FROM material WHERE 1=1 ";
+     Map<String, Object> map = new HashMap<>();
+
+     if (queryPara.getSearch() != null) {
+
+         sql = sql + " AND material_name LIKE :search  ";
+         map.put("search", queryPara.getSearch());
+     }
+
+     sql = sql + " ORDER BY " + queryPara.getOrderBy() + " " + queryPara.getSort();
+     sql = sql + " LIMIT :limit OFFSET :offset";
+     map.put("limit", queryPara.getLimit());
+     map.put("offset", queryPara.getOffset());
+     List<Construction> constructionList = namedParameterJdbcTemplate.query(sql, map, new ConstructionRowMapper());
+     if(constructionList.size() >0)
+         return constructionList;
+     else return null;
+
+
+ }
+ @Override
+ public Construction getConstructionItemByName (String constructionItem){
+
+        String sql = "SELECT * FROM construction WHERE construction_item = :construction_item ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("construction_item", constructionItem);
+        List<Construction> constructionList = namedParameterJdbcTemplate.query(sql, map, new ConstructionRowMapper());
+        if(constructionList.size() >0)
+            return constructionList.get(0);
+        else return null;
+
+ }
+
+
 }
+
+

@@ -1,8 +1,14 @@
 package com.masonlian.thejournal.controller;
 
+import com.masonlian.thejournal.dto.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
+import com.masonlian.thejournal.dto.QuotationWithItemDto;
+import com.masonlian.thejournal.dto.request.QuotationItemRequest;
+import com.masonlian.thejournal.dto.request.QuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
+import com.masonlian.thejournal.model.Quotation;
+import com.masonlian.thejournal.model.QuotationItem;
 import com.masonlian.thejournal.service.ProjectsService;
 import com.masonlian.thejournal.util.Page;
 import jakarta.validation.Valid;
@@ -11,6 +17,8 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +33,7 @@ public class ProjecetsController {
     private ProjectsService projectsService;
 
 
+    //創建專案
     @PostMapping("/projects")
     public ResponseEntity<Project> createProjects(@RequestBody ProjectRequest projectRequest
 
@@ -45,6 +54,10 @@ public class ProjecetsController {
 //        return ResponseEntity.status(HttpStatus.OK).body(project);
 //    }
 
+
+
+//刪除專案
+@PreAuthorize( "!hasAnyAuthority('L3','L2')")
     @DeleteMapping("/projects/{projectId}")
     public ResponseEntity<Project> deleteProjectById(@PathVariable Integer projectId) {
 
@@ -54,6 +67,8 @@ public class ProjecetsController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    //更新專案狀態
+    @PreAuthorize( "!hasAnyAuthority('L3')")
     @PostMapping("projects/{projectId}")
     public ResponseEntity<Project> updateProject(@PathVariable Integer projectId,
                                                  @RequestBody ProjectRequest projectRequest) {
@@ -67,6 +82,7 @@ public class ProjecetsController {
 
 
 
+    //調閱專案內容以及分頁功能
     @Valid
     @GetMapping("allprojects") //set
     public ResponseEntity<Page<Project>> getProjects(
@@ -74,7 +90,8 @@ public class ProjecetsController {
             @RequestParam(defaultValue = "budget") String orderBy,
             @RequestParam(defaultValue = "1") @Min(0) int offset,
             @RequestParam(name= "limit",defaultValue= " 5") @Max(5) @Min(0) int limit,
-            @RequestParam(defaultValue = "desc") String sort
+            @RequestParam(defaultValue = "desc") String sort,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails // 增加權限範圍
     ) {
 
             QueryPara queryPara = new QueryPara();
@@ -84,7 +101,7 @@ public class ProjecetsController {
             queryPara.setOffset(offset);
             queryPara.setSort(sort);
 
-            List <Project> projectList =  projectsService.getProjects(queryPara);
+            List <Project> projectList =  projectsService.getProjects(queryPara,customUserDetails);
 
             Page<Project> projectPage = new Page<>();
             projectPage.setTotal(projectList.size());
@@ -96,6 +113,51 @@ public class ProjecetsController {
 
 
     }
+
+
+    //透過報價單的設計除了能夠建立預算進入案件之外，還能調整成本資料庫。
+
+    @PostMapping("/project/{projectId}/quotation")
+    public ResponseEntity<Quotation> createQuotation(@PathVariable Integer projectId , @RequestBody QuotationRequest quotationRequest) {
+
+        Integer quotationId = projectsService.createQuotation(projectId, quotationRequest);
+        Quotation quotation = projectsService.getQuotationById(quotationId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(quotation);
+
+
+
+    }
+
+    @PostMapping("project/{quotationId}/item")
+    public ResponseEntity<?> createQuotationItem(@PathVariable Integer quotationId, @RequestBody QuotationItemRequest quotationItemRequest) {
+
+        projectsService.createQuotationItem(quotationId, quotationItemRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(quotationItemRequest);
+
+
+
+
+    }
+
+
+    @GetMapping("/porjects/quotation/{projectId}")
+    public ResponseEntity<List<QuotationWithItemDto>> getQuotations(@PathVariable Integer projectId) {
+
+        List<QuotationWithItemDto> quotationList  = projectsService.getQuotations(projectId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(quotationList);
+
+
+    }
+
+    // Update與Delete先省略
+
+
+
+
+
+
 }
 
 

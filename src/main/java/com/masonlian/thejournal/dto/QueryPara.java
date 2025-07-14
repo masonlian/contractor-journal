@@ -6,13 +6,19 @@ import com.masonlian.thejournal.constant.MediaType;
 
 import java.util.Date;
 
+
+//設定請求的參數
 public class QueryPara {
 
     private Integer limit;
     private Integer offset;
+
     private String sort;
     private String orderBy;
+
     private  String  search;
+    private ConstructionCategory constructionCategory;
+
     private Level level;
     private MediaType mediaType;
 
@@ -50,7 +56,7 @@ public class QueryPara {
         this.mediaType = mediaType;
     }
 
-    private ConstructionCategory constructionCategory;
+
 
     public Level getJoblevel() {
         return level;
