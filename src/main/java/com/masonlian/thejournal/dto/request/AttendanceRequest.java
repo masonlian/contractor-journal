@@ -6,9 +6,4 @@ public class AttendanceRequest {
         return attendance;
     }
 
-    public Integer eventId;
-    public Integer getEventId() {
-        return eventId;
-    }
-    public void setEventId(Integer eventId) {}
 }

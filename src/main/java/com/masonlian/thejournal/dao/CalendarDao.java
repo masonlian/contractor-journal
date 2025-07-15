@@ -27,5 +27,8 @@ public interface CalendarDao {
     void updateDailyExpenses(Integer eventId,BigDecimal newExpenses);
     List<MaterialEvent> getMaterialUsedById(Integer eventId);
     void  updateMaterialEvent(Integer eventId, MaterialEvent materialEvent);
+    Integer finishProject(Integer eventId, CalendarEventRequest calendarEventRequest);
+    void laborAttend(Integer eventId ,Integer employeeId,AttendanceRequest attendanceRequest );
+
 
 }

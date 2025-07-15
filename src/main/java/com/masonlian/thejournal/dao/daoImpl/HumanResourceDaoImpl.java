@@ -2,9 +2,14 @@ package com.masonlian.thejournal.dao.daoImpl;
 
 import com.masonlian.thejournal.dao.HumanResourceDao;
 import com.masonlian.thejournal.dto.QueryPara;
+import com.masonlian.thejournal.dto.request.AttendanceRequest;
+import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
 import com.masonlian.thejournal.model.LaborRole;
+import com.masonlian.thejournal.model.Salary;
 import com.masonlian.thejournal.rowmapper.EmployeeRowMapper;
+import com.masonlian.thejournal.rowmapper.SalaryRowMapper;
+import jakarta.validation.OverridesAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,6 +17,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,16 +30,20 @@ public class HumanResourceDaoImpl implements HumanResourceDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public Integer createProfile(LaborEventQueryRequest laborEventQueryRequest){
+    public Integer createProfile(CreateLaborRoleRequest createLaborRoleRequest){
 
-        String sql = "INSERT INTO human_resource (  name,  wage, image_url, phone_number) VALUES ( :name,:wage, :image_url, :phoneNumber)";
+        String sql = "INSERT INTO human_resource (  name,  wage, image_url, phone_number, level, role , email , created_date ) VALUES ( :name,:wage, :image_url, :phoneNumber , :level, :role , :email, :createdDate )";
         Map<String,Object> map = new HashMap<>();
+        map.put("name",createLaborRoleRequest.getName());
+        map.put("wage",createLaborRoleRequest.getWage());
+        map.put("image_url",createLaborRoleRequest.getImageUrl());
+        map.put("phone_number",createLaborRoleRequest.getPhoneNumber());
+        map.put("level",createLaborRoleRequest.getLevel());
+        map.put("role",createLaborRoleRequest.getRole());
+        map.put("email",createLaborRoleRequest.getEmail());
 
-        map.put("name", laborEventQueryRequest.getName());
-        map.put("wage", laborEventQueryRequest.getWage());
-        map.put("phoneNumber", laborEventQueryRequest.getPhoneNumber());
-        map.put("image_url", laborEventQueryRequest.getImageUrl());
-
+        Timestamp date = new Timestamp(System.currentTimeMillis()) ;
+        map.put("created_date",date);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map),  keyHolder);
@@ -112,6 +123,92 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
             return laborRoleList.get(0);
         }
         else return null;
+
+    }
+
+    @Override
+    public void createAttendance(Timestamp date, List<LaborRole> laborRoleList){
+
+        String sql  = "INSERT attendance  ( attendance_date, is_attendance, name, employee_id ) VALUES  ( :attendance_date, :is_attendance, :name, :employee_id ) WHERE attendance_id = :attendance_id";
+        MapSqlParameterSource[] mapSqlParameterSource = new MapSqlParameterSource[laborRoleList.size()];
+        for(int i = 0 ; i<laborRoleList.size();i++){
+            mapSqlParameterSource[i] = new MapSqlParameterSource();
+            mapSqlParameterSource[i].addValue("attendance_date", date);
+            mapSqlParameterSource[i].addValue(" is_attendance", false );
+            mapSqlParameterSource[i].addValue("name", laborRoleList.get(i).getName());
+            mapSqlParameterSource[i].addValue("employee_id", laborRoleList.get(i).getEmployeeId());
+
+        }
+        namedParameterJdbcTemplate.batchUpdate(sql,mapSqlParameterSource);
+
+    }
+
+    @Override
+    public LaborRole getEmployeeByEmail(String email){
+        String sql = "SELECT * FROM human_resource WHERE email = :email   ";
+        Map<String,Object> map = new HashMap<>();
+        map.put("email",email);
+        List<LaborRole> laborRoleList =  namedParameterJdbcTemplate.query(sql,map,new EmployeeRowMapper());
+        if(laborRoleList.size()>0){
+            return laborRoleList.get(0);
+        }else return null;
+
+    }
+
+    @Override
+    public void isAttendance (Integer employeeId, AttendanceRequest attendanceRequest){
+
+        String sql = " UPDATE attendance  SET is_attendance = :is_attendance WHERE employee_id = :employee_id  ";
+        Map<String,Object> map = new HashMap<>();
+        map.put( "is_attendance", attendanceRequest.getAttendance() );
+        map.put( "employee_id",employeeId);
+        namedParameterJdbcTemplate.update(sql,map);
+    }
+
+    @Override
+    public void createSalary(Integer month, LaborRole laborRole){
+
+        String sql = "INSERT salary (employee_id, month, expected_salary)  VALUES  (:employee_id, :month, :expected_salary)  ";
+        Map<String,Object> map = new HashMap<>();
+        map.put("employee_id", laborRole.getEmployeeId());
+        map.put("month", month);
+        map.put("expected_salary",laborRole.getWage());
+        namedParameterJdbcTemplate.update(sql,map);
+
+    }
+
+    @Override
+    public Salary getSalary(Integer month, Integer employeeId){
+
+        String sql = "  SELECT * FROM salary  WHERE employee_id = :employee_id ";
+        Map<String,Object> map = new HashMap<>();
+        map.put("employee_id",employeeId);
+        List<Salary> salaryList = namedParameterJdbcTemplate.query(sql,map , new SalaryRowMapper());
+        if(salaryList.size()>0){
+            return salaryList.get(0);
+        }   else return null;
+
+    }
+
+    @Override
+    public void updateExpectedSalary (Salary monthSalary){
+
+        String sql = " UPDATE salary SET  expected_salary = :expected_salary  WHERE employee_id = :employee_id   ";
+        Map<String,Object> map = new HashMap<>();
+        map.put("expected_salary",monthSalary);
+        namedParameterJdbcTemplate.update(sql,map);
+
+
+    }
+    @Override
+    public void updateActuallySalary (Salary monthSalary){
+
+        String sql =  " UPDATE salary SET attendance_number = :attendance_number , actual_salary = :actual_salary  WHERE employee_id = :employee_id    ";
+        Map<String,Object> map = new HashMap<>();
+        map.put("attendance_number",monthSalary.getAttendanceNumber());
+        map.put("actual_salary",monthSalary.getActualSalary());
+        map.put("employee_id",monthSalary.getEmployeeId());
+        namedParameterJdbcTemplate.update(sql,map);
 
     }
 

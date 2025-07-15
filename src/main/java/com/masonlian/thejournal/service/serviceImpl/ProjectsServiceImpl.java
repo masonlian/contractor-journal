@@ -166,5 +166,17 @@ public class ProjectsServiceImpl implements ProjectsService {
 
     }
 
+    @Override
+    public void updateProfitById(Integer projectId){
+        Project project = projectsDao.getProjectById(projectId);
+        BigDecimal balance =  project.getBalance();
+
+        BigDecimal costEstimate = project.getCostEstimate();
+        BigDecimal profit= costEstimate.subtract(balance);
+
+        projectsDao.updateProfitById(projectId);
+
+    }
+
 
 }

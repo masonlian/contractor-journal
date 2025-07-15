@@ -17,6 +17,15 @@ public class Project {
     private Date  creationDate;
     private Date lastModifiedDate;
     private String description;
+    private Integer ConstructionPeriod;
+
+    public Integer getConstructionPeriod() {
+        return ConstructionPeriod;
+    }
+
+    public void setConstructionPeriod(Integer constructionPeriod) {
+        ConstructionPeriod = constructionPeriod;
+    }
 
     public BigDecimal getBalance() {
         return balance;

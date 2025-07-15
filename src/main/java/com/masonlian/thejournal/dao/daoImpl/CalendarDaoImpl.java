@@ -1,6 +1,7 @@
 package com.masonlian.thejournal.dao.daoImpl;
 
 import com.masonlian.thejournal.dao.CalendarDao;
+import com.masonlian.thejournal.dao.ProjectsDao;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
@@ -23,6 +24,8 @@ public class CalendarDaoImpl implements CalendarDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Autowired
+    private ProjectsDao projectsDao;
 
     @Override
     public Integer createCalendarEvent(CalendarEventRequest calendarEventRequest) {
@@ -245,8 +248,38 @@ public class CalendarDaoImpl implements CalendarDao {
         map.put("event_id", eventId);
         namedParameterJdbcTemplate.update(sql, map);
 
+    }
+
+
+
+    @Override
+    public Integer finishProject(Integer eventId, CalendarEventRequest calendarEventRequest){
+
+        String sql = " UPDATE calendar_events SET finished = :finished WHERE event_id = :event_id ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("event_id", eventId);
+        map.put("finished", calendarEventRequest.getFinished());
+        namedParameterJdbcTemplate.update(sql, map);
+
+        Project project =  projectsDao.getProjectByName(projectsDao.getProjectByName(calendarEventRequest.getProjectName()).getProjectName());
+        if (project != null){
+            return project.getProjectId();
+        }
+        else return null;
 
     }
+
+    @Override
+    public void laborAttend(Integer eventId , Integer employeeId,AttendanceRequest attendanceRequest ){
+        String sql =  " UPDATE  labor_events SET attend = :attend WHERE event_id = :event_id  AND employee_id = :employee_id  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("event_id", eventId);
+        map.put("attend", attendanceRequest.getAttendance());
+        map.put("employee_id", employeeId);
+        namedParameterJdbcTemplate.update(sql, map);
+
+    }
+
 
 
 }

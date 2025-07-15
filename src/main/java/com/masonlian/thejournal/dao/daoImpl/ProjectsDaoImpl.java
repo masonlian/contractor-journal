@@ -227,6 +227,36 @@ public class ProjectsDaoImpl implements ProjectsDao {
 
     }
 
+    @Override
+    public void updateProfitById(Integer projectId) {
+        String sql = "UPDATE projects SET profit= :profit  WHERE project_id = :project_id    ";
+        Map<String, Object> map = new HashMap();
+        map.put("project_id", projectId);
+        namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public void finishProject(Integer projectId,Boolean finish ){
+
+         String sql = "UPDATE projects SET finished = :finished WHERE project_id = :project_id    ";
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", projectId);
+         map.put("finished",finish );
+         namedParameterJdbcTemplate.update(sql, map);
+
+    }
+    @Override
+    public void updatePeriod(Integer projectId , Integer period){
+         String sql  = "UPDATE projects SET period = :period  WHERE project_id = :project_id    ";
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", projectId);
+         map.put("period",period);
+         namedParameterJdbcTemplate.update(sql, map);
+
+
+    }
+
+
 
 
 

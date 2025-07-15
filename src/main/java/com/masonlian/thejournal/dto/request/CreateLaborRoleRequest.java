@@ -1,4 +1,4 @@
-package com.masonlian.thejournal.model;
+package com.masonlian.thejournal.dto.request;
 
 import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.constant.Role;
@@ -6,25 +6,14 @@ import com.masonlian.thejournal.constant.Role;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class LaborRole {
+public class CreateLaborRoleRequest {
 
-    private Integer employeeId;;
     private String name;
     private BigDecimal wage;
     private String imageUrl;
     private String phoneNumber;
     private Level level;
     private Role role;
-
-    public Timestamp getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Timestamp createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    private Timestamp createdDate;
 
     public String getEmail() {
         return email;
@@ -36,20 +25,12 @@ public class LaborRole {
 
     private String email;
 
-    public Role getRole() {
-        return role;
+    public String getName() {
+        return name;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Level getLevel() {
-        return level;
-    }
-
-    public void setLevel(Level level) {
-        this.level = level;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public BigDecimal getWage() {
@@ -58,22 +39,6 @@ public class LaborRole {
 
     public void setWage(BigDecimal wage) {
         this.wage = wage;
-    }
-
-    public Integer getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(Integer employeeId) {
-        this.employeeId = employeeId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getImageUrl() {
@@ -92,7 +57,19 @@ public class LaborRole {
         this.phoneNumber = phoneNumber;
     }
 
+    public Level getLevel() {
+        return level;
+    }
 
+    public void setLevel(Level level) {
+        this.level = level;
+    }
 
+    public Role getRole() {
+        return role;
+    }
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

@@ -25,7 +25,8 @@ public interface ProjectsService {
     Quotation getQuotationById(Integer quotationId);
     void createQuotationItem (Integer projectId, QuotationItemRequest quotationItemRequest);
     List<QuotationWithItemDto> getQuotations (Integer projectId);
-
+    void updateProfitById(Integer projectId) ;
     void updateCostEstimate(Integer projectId, BigDecimal newAmount);
+
 
 }

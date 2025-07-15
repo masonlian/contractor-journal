@@ -19,15 +19,21 @@ public interface ProjectsDao {
     void updateProjectById(Integer projectId,ProjectRequest projectRequest);
     List<Project> getProjects(QueryPara queryPara);
     Project getProjectByName(String projectName);
+    void updateProfitById(Integer projectId);
 
+    //報價單資料操作
     Integer createQuotation(Integer projectId, QuotationRequest quotationRequest);
     void updateTotalAmount(Integer quotationId, BigDecimal totalAmount);
-    //報價單資料操作
+
     void createQuotationItem(List<QuotationItem> quotationItemList);
 
     Quotation getQuotationById(Integer quotationId);
+
+    void updatePeriod(Integer projectId  , Integer period);
     void updateCostEstimate(Integer projectId, BigDecimal newEstimate);
     List<QuotationWithItemDto> getQuotations (Integer projectId);
+    void finishProject(Integer projectId,Boolean finish);
+
 
 
 }

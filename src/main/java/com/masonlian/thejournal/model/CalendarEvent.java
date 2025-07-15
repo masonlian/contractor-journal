@@ -3,8 +3,9 @@ package com.masonlian.thejournal.model;
 import com.masonlian.thejournal.constant.ConstructionCategory;
 
 import java.math.BigDecimal;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
+// 人類最強大的能力就是持續修改嗎？
 public class CalendarEvent {
 
     public String getProjectName() {

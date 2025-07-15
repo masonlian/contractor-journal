@@ -4,17 +4,26 @@ import com.masonlian.thejournal.dao.CalendarDao;
 import com.masonlian.thejournal.dao.CostMgmtDao;
 import com.masonlian.thejournal.dao.HumanResourceDao;
 import com.masonlian.thejournal.dao.ProjectsDao;
+import com.masonlian.thejournal.dto.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
 import com.masonlian.thejournal.service.CalendarService;
+import com.masonlian.thejournal.service.HumanResourceService;
 import com.masonlian.thejournal.service.ProjectsService;
 import com.masonlian.thejournal.service.UserService;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,9 +43,18 @@ public class CalendarServiceImpl implements CalendarService {
     private ProjectsService projectsService;
     @Autowired
     private ProjectsDao projectsDao;
+    @Autowired
+    private HumanResourceService humanResourceService;
 
+
+    //之後可以的話調用資料盡量都用id不要用名字
     @Override
     public Integer createCalendarEvent(CalendarEventRequest calendarEventRequest){
+
+        Project project = projectsDao.getProjectByName(calendarEventRequest.getProjectName());
+        Integer period = project.getConstructionPeriod();
+        period =  period + 1;
+        projectsDao.updatePeriod(project.getProjectId() ,period);
 
         return calendarDao.createCalendarEvent(calendarEventRequest);
 
@@ -44,11 +62,25 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     public void updateCalendarEvent(Integer eventId, CalendarEventRequest calendarEventRequest){
+
+        Project project = projectsDao.getProjectByName(calendarEventRequest.getProjectName());
+        Integer projectId = project.getProjectId();
+
+        if(calendarEventRequest.getFinished()==true){
+           projectsService.updateProfitById(projectId);
+        }
+
         calendarDao.updateCalendarEvent(eventId, calendarEventRequest);
     }
 
     @Override
     public void deleteCalendarEventById(Integer eventId){
+        CalendarEvent calendarEvent= getCalendarEventById(eventId);
+        Project project = projectsDao.getProjectByName(calendarEvent.getProjectName());
+        Integer period =  project.getConstructionPeriod();
+        period =  period - 1;
+        projectsDao.updatePeriod(project.getProjectId(), period);
+
         calendarDao.deleteCalendarEventById(eventId);
     }
 
@@ -69,6 +101,9 @@ public class CalendarServiceImpl implements CalendarService {
     @Override
     public void createLaborEvent(Integer eventId ,CreateLaborEventRequest createLaborEventRequest){
 
+        CalendarEvent calendarEvent  = calendarDao.getCalendarEventById(eventId);
+        Integer month  = calendarEvent.getEventDate().toLocalDateTime().getMonthValue();
+        Timestamp date =  calendarEvent.getEventDate();
 
         BigDecimal totalAmount = BigDecimal.ZERO;
         List<LaborRole> laborRoleList = new ArrayList<>();
@@ -76,6 +111,9 @@ public class CalendarServiceImpl implements CalendarService {
         for(LaborRole laborRole:laborRoleList){
 
             LaborRole attendance= humanResourceDao.getEmployeeByName(laborRole.getName());
+
+
+
 
             laborRole.setLevel(attendance.getLevel());
             laborRole.setRole(attendance.getRole());
@@ -86,12 +124,29 @@ public class CalendarServiceImpl implements CalendarService {
             laborRole.setImageUrl(attendance.getImageUrl());
 
             totalAmount.add(laborRole.getWage());
+
+            Salary laborMonthSalary  =  humanResourceDao.getSalary(month,laborRole.getEmployeeId());
+
+            if(laborMonthSalary!=null){
+
+                humanResourceDao.createSalary(month,laborRole);
+
+            }
+
+            else humanResourceService.updateExpectedSalary(laborMonthSalary);
+
+
         }
 
         updateDailyExpenses(eventId, totalAmount);
 
         calendarDao.createLaborEvent(eventId,laborRoleList);
         calendarDao.updateWagePerDay(eventId,totalAmount);
+
+
+
+
+        humanResourceDao.createAttendance(date,laborRoleList);
 
     }
 
@@ -218,16 +273,42 @@ public class CalendarServiceImpl implements CalendarService {
 
 
     @Override
-    public void attendanceCheck(Integer userId, AttendanceRequest attendanceRequest){
+    public void attendanceCheck(Integer eventId, CustomUserDetails user, AttendanceRequest attendanceRequest){
+
+
+
+        CalendarEvent calendarEvent = calendarDao.getCalendarEventById(eventId);
+        Timestamp eventDate =  calendarEvent.getEventDate();
+        LocalDateTime eventDateTime = eventDate.toLocalDateTime();
+        LocalDate evenDate = eventDateTime.toLocalDate();
+
+        Timestamp checkTime = new Timestamp(System.currentTimeMillis());
+        LocalDate checkDate = checkTime.toLocalDateTime().toLocalDate();
+
+
 
 
         //將userId轉換為 laborId
-        User user = userService.getUserById(userId);
-        LaborRole laborRole = humanResourceDao.getEmployeeByName(user.getName());
+        String email = user.getUsername();
+        LaborRole laborRole = humanResourceDao.getEmployeeByEmail(email);
+        Integer employeeId =  laborRole.getEmployeeId();
 
 
-        calendarDao.attendanceCheck(laborRole,attendanceRequest);
+        //scope先放寬到“日”的級距
+        if( evenDate ==  checkDate ) {
 
+            calendarDao.laborAttend(eventId, employeeId, attendanceRequest);
+
+            humanResourceDao.isAttendance(employeeId ,attendanceRequest );
+
+            Integer month = checkDate.getMonthValue();
+            Salary salary = humanResourceDao.getSalary(month,eventId);
+
+            humanResourceService.updateActualSalary(salary);
+
+        }
+
+        else throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE," 並非上班日期！") ;
     }
 
     @Override
@@ -277,11 +358,21 @@ public class CalendarServiceImpl implements CalendarService {
 
 
     }
+    @Override
+    public Integer finishProject(Integer eventId, CalendarEventRequest calendarEventRequest){
 
+        String name = calendarEventRequest.getProjectName();
+        Project project = projectsDao.getProjectByName(name);
 
+        if(calendarEventRequest.getFinished()==true){
 
+            projectsService.updateProfitById(project.getProjectId());
+            projectsDao.finishProject(project.getProjectId(),calendarEventRequest.getFinished());
 
+            return calendarDao.finishProject(eventId,calendarEventRequest);
 
+        } else return null;
+    }
 
 
 }

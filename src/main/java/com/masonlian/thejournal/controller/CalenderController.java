@@ -1,16 +1,19 @@
 package com.masonlian.thejournal.controller;
 
+import com.masonlian.thejournal.dto.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
 import com.masonlian.thejournal.service.CalendarService;
 import com.masonlian.thejournal.service.ProjectsService;
 import com.masonlian.thejournal.util.Page;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Calendar;
@@ -74,10 +77,13 @@ public class CalenderController {
         return ResponseEntity.status(HttpStatus.OK).body(calendarPage);
     }
 
+
+    //分段提交
     @PostMapping("/calendar/labor/{eventId}")
     public ResponseEntity <?> createLaborEvent(@PathVariable Integer eventId, @RequestBody CreateLaborEventRequest createLaborEventRequest) {
 
-        calendarService.createLaborEvent(eventId,createLaborEventRequest);//回傳人力事件的列表id
+        calendarService.createLaborEvent(eventId,createLaborEventRequest); //回傳人力事件的列表id
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
 
@@ -93,7 +99,7 @@ public class CalenderController {
 
     }
 
-    @GetMapping("/calendar/labor/eventId")
+    @GetMapping("/calendar/labor/{eventId}")
     public ResponseEntity<List<LaborRole>>  getAttendancesList( @PathVariable Integer eventId ){
 
         List<LaborRole> laborRoleList =  calendarService.getAttendancesList(eventId);
@@ -121,10 +127,11 @@ public class CalenderController {
     }
 
 
-    @PutMapping("/calendar/{userIdI}/attendance")
-    public ResponseEntity<Boolean> AttendanceCheck(@PathVariable Integer userId , @RequestBody AttendanceRequest attendanceRequest) {
+    //將使用者的資訊外包給前端自動送入後端 ，也就是說
+    @PutMapping("/calendar/{eventId}/attendance")
+    public ResponseEntity<Boolean> AttendanceCheck(@PathVariable Integer eventId, @AuthenticationPrincipal CustomUserDetails user, @RequestBody AttendanceRequest attendanceRequest) {
 
-        calendarService.attendanceCheck(userId,attendanceRequest);
+        calendarService.attendanceCheck(eventId,user,attendanceRequest);
 
         return ResponseEntity.status(HttpStatus.OK).build();
 
@@ -145,11 +152,20 @@ public class CalenderController {
 
 
     @PutMapping("/calendar/material/{eventId}")
-    public ResponseEntity<MaterialEvent> updateMaterialEvent(@PathVariable Integer eventId, @RequestBody MaterialUsed materialUsed) {
+    public ResponseEntity<MaterialEvent> updateMaterialEvent(@PathVariable Integer eventId, @Valid  @RequestBody MaterialUsed materialUsed) {
 
         calendarService.updateMaterialEvent(eventId,materialUsed);
         return ResponseEntity.status(HttpStatus.OK).build();
 
+
+    }
+
+    @PutMapping("/calendar/{eventId}/ ")
+    public ResponseEntity<Project> finishProject(@PathVariable Integer eventId ,@Valid CalendarEventRequest calendarEventRequest) {
+
+        Integer projectId = calendarService.finishProject(eventId,calendarEventRequest);
+        Project project = projectsService.getProjectById(projectId);
+        return ResponseEntity.status(HttpStatus.OK).body(project);
 
     }
 

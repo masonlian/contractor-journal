@@ -2,6 +2,7 @@ package com.masonlian.thejournal.controller;
 
 import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.dto.QueryPara;
+import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
 import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.service.HumanResourceService;
@@ -22,11 +23,13 @@ public class HumanResourceController {
     @Autowired
     HumanResourceService humanResourceService;
 
+
+    //主管創建人事檔案
     @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("h-resource")
-    public ResponseEntity<LaborRole>  createProfile(@RequestBody LaborEventQueryRequest laborEventQueryRequest) {
+    public ResponseEntity<LaborRole>  createProfile(@RequestBody CreateLaborRoleRequest createLaborRoleRequest) {
 
-        Integer employeeId= humanResourceService.createProfile(laborEventQueryRequest);
+        Integer employeeId= humanResourceService.createProfile(createLaborRoleRequest);
         LaborRole laborRole = humanResourceService.getEmployeeById(employeeId);
         return ResponseEntity.status(HttpStatus.CREATED).body(laborRole);
     }
