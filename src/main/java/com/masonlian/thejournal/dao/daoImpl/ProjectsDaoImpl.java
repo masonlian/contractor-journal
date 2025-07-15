@@ -3,15 +3,14 @@ package com.masonlian.thejournal.dao.daoImpl;
 import com.masonlian.thejournal.dao.ProjectsDao;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
+import com.masonlian.thejournal.dto.request.NewReceived;
 import com.masonlian.thejournal.dto.request.QuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
 import com.masonlian.thejournal.model.QuotationItem;
-import com.masonlian.thejournal.rowmapper.ProjectRowMapper;
-import com.masonlian.thejournal.rowmapper.QuotationItemRowMapper;
-import com.masonlian.thejournal.rowmapper.QuotationRowMapper;
-import com.masonlian.thejournal.rowmapper.QuotationWithItemRowMapper;
+import com.masonlian.thejournal.model.Received;
+import com.masonlian.thejournal.rowmapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,6 +19,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -254,6 +254,58 @@ public class ProjectsDaoImpl implements ProjectsDao {
          namedParameterJdbcTemplate.update(sql, map);
 
 
+    }
+
+    @Override
+    public Integer createReceived(NewReceived newReceived){
+
+         String sql = " INSERT received (project_id, name, construction_category, received_payment, received_time) VALUES ( :project_id, :name, :construction_category, :received_payment, :received_time)  ";
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", newReceived.getProjectId());
+         map.put("name", newReceived.getName());
+         map.put("construction_category", newReceived.getConstructionCategory());
+         map.put("received_payment", newReceived.getReceivedPayment());
+         Date now = new Date();
+         map.put("received_time", now);
+         KeyHolder keyHolder = new GeneratedKeyHolder();
+
+         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+         Integer receivedId = keyHolder.getKey().intValue();
+         return receivedId;
+
+
+    }
+
+    @Override
+    public void updateBalance(Integer projectId , BigDecimal balance){
+         String sql = " UPDATE projects SET balance = :balance WHERE project_id = :project_id ";
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", projectId);
+         map.put("balance",balance);
+         namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public Received getReceivedById(Integer receivedId){
+         String sql = " SELECT * FROM received  WHERE project_id = :project_id   ";
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", receivedId);
+         List<Received> receivedList =  namedParameterJdbcTemplate.query(sql,map,new ReceivedRowMapper());
+         if(receivedList.size()>0){
+             return receivedList.get(0);
+         }else return null;
+
+    }
+    @Override
+    public List<Received> getReceivedByProjectId(Integer projectId){
+
+         String sql = " SELECT * FROM received  WHERE project_id = :project_id  ";
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", projectId);
+         List<Received> receivedList =  namedParameterJdbcTemplate.query(sql,map,new ReceivedRowMapper());
+         if(receivedList.size()>0)
+                 return receivedList;
+         else return null;
     }
 
 

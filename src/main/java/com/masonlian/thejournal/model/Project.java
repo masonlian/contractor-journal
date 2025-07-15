@@ -18,6 +18,7 @@ public class Project {
     private Date lastModifiedDate;
     private String description;
     private Integer ConstructionPeriod;
+    private BigDecimal balance;
 
     public Integer getConstructionPeriod() {
         return ConstructionPeriod;
@@ -35,7 +36,6 @@ public class Project {
         this.balance = balance;
     }
 
-    private BigDecimal balance;
 
     public String getOwner() {
         return owner;

@@ -2,11 +2,13 @@ package com.masonlian.thejournal.dao;
 
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
+import com.masonlian.thejournal.dto.request.NewReceived;
 import com.masonlian.thejournal.dto.request.QuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
 import com.masonlian.thejournal.model.QuotationItem;
+import com.masonlian.thejournal.model.Received;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,6 +35,11 @@ public interface ProjectsDao {
     void updateCostEstimate(Integer projectId, BigDecimal newEstimate);
     List<QuotationWithItemDto> getQuotations (Integer projectId);
     void finishProject(Integer projectId,Boolean finish);
+
+    Integer createReceived(NewReceived newReceived);
+    void updateBalance(Integer projectId , BigDecimal balance);
+    Received getReceivedById(Integer receivedId);
+    List<Received> getReceivedByProjectId(Integer projectId);
 
 
 

@@ -3,12 +3,14 @@ package com.masonlian.thejournal.service;
 import com.masonlian.thejournal.dto.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
+import com.masonlian.thejournal.dto.request.NewReceived;
 import com.masonlian.thejournal.dto.request.QuotationItemRequest;
 import com.masonlian.thejournal.dto.request.QuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
 import com.masonlian.thejournal.model.QuotationItem;
+import com.masonlian.thejournal.model.Received;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,6 +23,7 @@ public interface ProjectsService {
     List<Project> getProjects(QueryPara queryPara, CustomUserDetails customUserDetails);
 
     BigDecimal updateBalanceByDailyExpense(String projectName ,BigDecimal newDailyExpense );
+
     Integer createQuotation(Integer projectId, QuotationRequest quotationRequest);
     Quotation getQuotationById(Integer quotationId);
     void createQuotationItem (Integer projectId, QuotationItemRequest quotationItemRequest);
@@ -28,5 +31,8 @@ public interface ProjectsService {
     void updateProfitById(Integer projectId) ;
     void updateCostEstimate(Integer projectId, BigDecimal newAmount);
 
+    Integer createReceived(NewReceived newReceived);
+    Received  getReceivedById(Integer receivedId);
+    List<Received> getReceivedByProjectId(Integer projectId);
 
 }

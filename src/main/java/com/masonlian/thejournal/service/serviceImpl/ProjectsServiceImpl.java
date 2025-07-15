@@ -6,11 +6,8 @@ import com.masonlian.thejournal.dao.ProjectsDao;
 import com.masonlian.thejournal.dto.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
-import com.masonlian.thejournal.dto.request.GiveAQuote;
-import com.masonlian.thejournal.dto.request.QuotationItemRequest;
-import com.masonlian.thejournal.dto.request.QuotationRequest;
+import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
-import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.service.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -177,6 +174,37 @@ public class ProjectsServiceImpl implements ProjectsService {
         projectsDao.updateProfitById(projectId);
 
     }
+
+    @Override
+    public Integer createReceived(NewReceived newReceived){
+
+        BigDecimal  payment = newReceived.getReceivedPayment();
+        updateBalance(newReceived.getProjectId(),payment );
+        return projectsDao.createReceived(newReceived);
+
+
+     }
+
+     public  void updateBalance(Integer projectId, BigDecimal balance){
+
+        Project project = projectsDao.getProjectById(projectId);
+        BigDecimal newBalance =  project.getBalance().add(balance);
+
+        projectsDao.updateBalance(projectId,newBalance);
+
+     }
+
+     @Override
+     public Received  getReceivedById(Integer receivedId){
+
+        return projectsDao.getReceivedById(receivedId);
+     }
+
+     @Override
+     public List<Received> getReceivedByProjectId(Integer projectId){
+
+        return projectsDao.getReceivedByProjectId(projectId);
+     }
 
 
 }

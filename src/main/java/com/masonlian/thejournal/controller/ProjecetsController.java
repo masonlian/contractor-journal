@@ -3,12 +3,14 @@ package com.masonlian.thejournal.controller;
 import com.masonlian.thejournal.dto.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
+import com.masonlian.thejournal.dto.request.NewReceived;
 import com.masonlian.thejournal.dto.request.QuotationItemRequest;
 import com.masonlian.thejournal.dto.request.QuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
 import com.masonlian.thejournal.model.QuotationItem;
+import com.masonlian.thejournal.model.Received;
 import com.masonlian.thejournal.service.ProjectsService;
 import com.masonlian.thejournal.util.Page;
 import jakarta.validation.Valid;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+//時間關係先CREATE跟READ功能，UPDATE跟DELETE再說。
 @Validated
 @RestController
 public class ProjecetsController {
@@ -136,12 +138,10 @@ public class ProjecetsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(quotationItemRequest);
 
 
-
-
     }
 
 
-    @GetMapping("/porjects/quotation/{projectId}")
+    @GetMapping("/projects/quotation/{projectId}")
     public ResponseEntity<List<QuotationWithItemDto>> getQuotations(@PathVariable Integer projectId) {
 
         List<QuotationWithItemDto> quotationList  = projectsService.getQuotations(projectId);
@@ -151,7 +151,32 @@ public class ProjecetsController {
 
     }
 
+    @PostMapping("/projects/received ")
+    public ResponseEntity<Received> createReceived(@RequestBody NewReceived newReceived) {
+
+        Integer createReceived = projectsService.createReceived(newReceived);
+        Received received  = projectsService.getReceivedById(createReceived);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(received);
+    }
+
+    @GetMapping("/projects/received/{projectId} ")
+    public ResponseEntity<List<Received>> getReceived(@PathVariable Integer projectId) {
+
+        List<Received> receivedList = projectsService.getReceivedByProjectId(projectId);
+        return ResponseEntity.status(HttpStatus.OK).body(receivedList);
+
+
+    }
+
+
+
+
+
     // Update與Delete先省略
+
+   //建立一個收付款項的table  去增加專案的balance
+
 
 
 

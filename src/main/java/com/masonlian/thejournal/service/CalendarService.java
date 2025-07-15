@@ -31,4 +31,6 @@ public interface CalendarService {
    BigDecimal updateDailyExpenses(Integer eventId,BigDecimal newExpenses);
    Integer finishProject(Integer eventId, CalendarEventRequest calendarEventRequest);
 
+
+
 }
