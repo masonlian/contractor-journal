@@ -171,8 +171,6 @@ public class ProjecetsController {
 
 
 
-
-
     // Update與Delete先省略
 
    //建立一個收付款項的table  去增加專案的balance

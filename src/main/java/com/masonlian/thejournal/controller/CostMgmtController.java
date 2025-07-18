@@ -4,9 +4,9 @@ package com.masonlian.thejournal.controller;
 import com.masonlian.thejournal.constant.ConstructionCategory;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.ConstructionRequest;
+import com.masonlian.thejournal.dto.request.CreateMaterialEventRequest;
 import com.masonlian.thejournal.dto.request.MaterialRequest;
-import com.masonlian.thejournal.model.Construction;
-import com.masonlian.thejournal.model.Material;
+import com.masonlian.thejournal.model.*;
 import com.masonlian.thejournal.service.CostMgmtService;
 import com.masonlian.thejournal.util.Page;
 import jakarta.validation.constraints.Max;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//materialEvent不應該跟日曆綁在一起，不貼和現實。
 @Validated
 @RestController
 public class CostMgmtController {
@@ -147,9 +148,47 @@ public class CostMgmtController {
 
         return ResponseEntity.status(HttpStatus.OK).body(constructionPage);
 
+    }
+
+    @PostMapping("/material/event")
+    public ResponseEntity<MaterialEvent>  createMaterialEvent(@RequestBody CreateMaterialEventRequest createMaterialEventRequest){
+
+        Integer materialEventId  =  costMgmtService.createMaterialEvent(createMaterialEventRequest);
+        MaterialEvent materialEvent = costMgmtService.getMaterialEventById(materialEventId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(materialEvent);
 
 
     }
+
+    @PutMapping("/payable/{payableId}  ") //
+    public ResponseEntity<AccountPayable> payToSupplier( @PathVariable Integer payablId ,  @RequestBody Boolean alreadyPaid  ){
+
+        costMgmtService.payToSupplier(payablId, alreadyPaid );
+        AccountPayable accountPayable =  costMgmtService.getPayableById(payablId);
+        return ResponseEntity.status(HttpStatus.OK).body(accountPayable);
+
+
+    } //
+
+    @GetMapping("/payable" )
+    public ResponseEntity<List<AccountPayable>> getPayable(@RequestParam   String search ,
+                                                    @RequestParam String orderBy,
+                                                     @RequestParam String sort,
+                                                     @RequestParam Integer limit,
+                                                     @RequestParam Integer offset ){
+
+        QueryPara queryPara = new QueryPara();
+        queryPara.setSearch(search);
+        queryPara.setOrderBy(orderBy);
+        queryPara.setSort(sort);
+        queryPara.setLimit(limit);
+        queryPara.setOffset(offset);
+
+        List<AccountPayable> payableList = costMgmtService.getPayable(queryPara);
+        return ResponseEntity.status(HttpStatus.OK).body(payableList);
+
+    }
+
 
 
 

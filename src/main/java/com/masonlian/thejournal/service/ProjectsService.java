@@ -30,6 +30,7 @@ public interface ProjectsService {
     List<QuotationWithItemDto> getQuotations (Integer projectId);
     void updateProfitById(Integer projectId) ;
     void updateCostEstimate(Integer projectId, BigDecimal newAmount);
+    void updateBalanceByMaterialCost(Integer projectId , BigDecimal newAmount);
 
     Integer createReceived(NewReceived newReceived);
     Received  getReceivedById(Integer receivedId);

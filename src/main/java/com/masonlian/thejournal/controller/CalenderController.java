@@ -90,14 +90,6 @@ public class CalenderController {
     }
 
     //排班功能
-    @PostMapping("/calendar/material/{eventId}")
-    public ResponseEntity <?> createMaterialEvent(@PathVariable Integer eventId, @RequestBody MaterialEventRequst materialEventRequst) {
-
-        calendarService.createMaterialEvent(eventId, materialEventRequst);//回傳人力事件的列表id
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-
-
-    }
 
     @GetMapping("/calendar/labor/{eventId}")
     public ResponseEntity<List<LaborRole>>  getAttendancesList( @PathVariable Integer eventId ){
@@ -140,25 +132,6 @@ public class CalenderController {
     }
 
 
-    @GetMapping("/calendar/material/{eventId}")
-    public ResponseEntity<List<MaterialEvent>> getMaterialUsed(@PathVariable Integer eventId) {
-
-        List<MaterialEvent> materialList = calendarService.getMaterialUsedById(eventId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(materialList);
-
-
-    }
-
-
-    @PutMapping("/calendar/material/{eventId}")
-    public ResponseEntity<MaterialEvent> updateMaterialEvent(@PathVariable Integer eventId, @Valid  @RequestBody MaterialUsed materialUsed) {
-
-        calendarService.updateMaterialEvent(eventId,materialUsed);
-        return ResponseEntity.status(HttpStatus.OK).build();
-
-
-    }
 
     @PutMapping("/calendar/{eventId}/ ")
     public ResponseEntity<Project> finishProject(@PathVariable Integer eventId ,@Valid CalendarEventRequest calendarEventRequest) {

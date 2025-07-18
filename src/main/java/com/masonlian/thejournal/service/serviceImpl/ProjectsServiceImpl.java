@@ -2,12 +2,14 @@ package com.masonlian.thejournal.service.serviceImpl;
 
 import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.dao.CostMgmtDao;
+import com.masonlian.thejournal.dao.FinancialDao;
 import com.masonlian.thejournal.dao.ProjectsDao;
 import com.masonlian.thejournal.dto.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
 import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
+import com.masonlian.thejournal.service.FinancialService;
 import com.masonlian.thejournal.service.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,8 @@ public class ProjectsServiceImpl implements ProjectsService {
     @Autowired
     private CostMgmtDao costMgmtDao;
 
+    @Autowired
+    FinancialService financialService;
 
     @Override
     public Integer createProject(ProjectRequest projectRequest){
@@ -169,9 +173,15 @@ public class ProjectsServiceImpl implements ProjectsService {
         BigDecimal balance =  project.getBalance();
 
         BigDecimal costEstimate = project.getCostEstimate();
-        BigDecimal profit= costEstimate.subtract(balance);
 
-        projectsDao.updateProfitById(projectId);
+        if (project.getFinish() == true){
+
+        BigDecimal profit = costEstimate.subtract(balance);
+
+        projectsDao.updateProfitById(projectId,profit);
+        financialService.updateProfit(profit);
+
+        }
 
     }
 
@@ -179,7 +189,10 @@ public class ProjectsServiceImpl implements ProjectsService {
     public Integer createReceived(NewReceived newReceived){
 
         BigDecimal  payment = newReceived.getReceivedPayment();
-        updateBalance(newReceived.getProjectId(),payment );
+        createBudget(newReceived.getProjectId(),payment);
+
+        financialService.updateReceived(newReceived.getReceivedPayment());
+
         return projectsDao.createReceived(newReceived);
 
 
@@ -205,6 +218,29 @@ public class ProjectsServiceImpl implements ProjectsService {
 
         return projectsDao.getReceivedByProjectId(projectId);
      }
+     @Override
+     public void updateBalanceByMaterialCost(Integer projectId , BigDecimal newAmount){
+
+        Project project = projectsDao.getProjectById(projectId);
+        BigDecimal balance = project.getBalance();
+        balance = balance.subtract(newAmount);
+
+        projectsDao.updateBalance(projectId,balance);
+
+     }
+
+    public  void createBudget(Integer projectId, BigDecimal newReceived){
+
+        Project project = projectsDao.getProjectById(projectId);
+        BigDecimal budget =  project.getBudget();
+        budget = budget.add(newReceived);
+
+        updateBalance(projectId,budget);
+        projectsDao.updateBudgetById(projectId,budget);
+
+
+
+    }
 
 
 }

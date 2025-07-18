@@ -3,12 +3,20 @@ package com.masonlian.thejournal.dto.request;
 import com.masonlian.thejournal.constant.ConstructionCategory;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 public class NewReceived {
 
     public Integer projectId;
     public String name;
+
+    public BigDecimal getReceivedPayment() {
+        return receivedPayment;
+    }
+
+    public void setReceivedPayment(BigDecimal receivedPayment) {
+        this.receivedPayment = receivedPayment;
+    }
+
     public BigDecimal receivedPayment;
     public ConstructionCategory constructionCategory;
 
@@ -28,13 +36,6 @@ public class NewReceived {
         this.name = name;
     }
 
-    public BigDecimal getReceivedPayment() {
-        return receivedPayment;
-    }
-
-    public void setReceivedPayment(BigDecimal receivedPayment) {
-        this.receivedPayment = receivedPayment;
-    }
 
     public ConstructionCategory getConstructionCategory() {
         return constructionCategory;

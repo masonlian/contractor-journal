@@ -4,9 +4,10 @@ import com.masonlian.thejournal.dao.CostMgmtDao;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.ConstructionRequest;
 import com.masonlian.thejournal.dto.request.MaterialRequest;
-import com.masonlian.thejournal.model.Construction;
-import com.masonlian.thejournal.model.Material;
+import com.masonlian.thejournal.model.*;
+import com.masonlian.thejournal.rowmapper.AccountPayableRowMapper;
 import com.masonlian.thejournal.rowmapper.ConstructionRowMapper;
+import com.masonlian.thejournal.rowmapper.MaterialEventRowMapper;
 import com.masonlian.thejournal.rowmapper.MaterialMgmtRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,6 +16,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,8 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Autowired
+    private CostMgmtDao costMgmtDao;
 
 
     @Override
@@ -212,6 +217,123 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
         else return null;
 
  }
+
+ @Override
+ public Integer createMaterialEvent(BigDecimal totalAmount, Integer projectId){
+        String sql = " INSERT  material_events (total_amount, project_id, created_time ) VALUES (:total_amount, :project_id, created_time) ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("total_amount", totalAmount);
+        map.put("project_id", projectId);
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        map.put("created_time", timestamp);
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update( sql, new MapSqlParameterSource(map), keyHolder);
+        Integer materialEventId = keyHolder.getKey().intValue();
+
+        return materialEventId;
+
+ }
+  @Override
+  public void createMaterialUsed(Integer materialEventId, List<MaterialUsed> materialUsedList){
+      String sql = "INSERT  material_used ( material_name, unit, amount, material_event_id)  VALUES (:material_name, :unit, :amount, material_event_id) ";
+      MapSqlParameterSource [] mapSqlParameterSources = new MapSqlParameterSource[materialUsedList.size()];
+      for(int i = 0; i < materialUsedList.size(); i++){
+
+          mapSqlParameterSources[i] = new MapSqlParameterSource();
+          mapSqlParameterSources[i].addValue("material_name", materialUsedList.get(i).getMaterialName());
+          mapSqlParameterSources[i].addValue("unit", materialUsedList.get(i).getUnit());
+          mapSqlParameterSources[i].addValue("amount", materialUsedList.get(i).getAmount());
+          mapSqlParameterSources[i].addValue("material_event_id", materialEventId);
+
+      }
+      namedParameterJdbcTemplate.batchUpdate(sql, mapSqlParameterSources);
+
+  }
+
+    @Override
+    public MaterialEvent getMaterialEventById(Integer materialEventId){
+        String sql = " SELECT * FROM material_events WHERE material_event_id = :material_event_id ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("material_event_id", materialEventId);
+
+        List<MaterialEvent> materialEventList =  namedParameterJdbcTemplate.query(sql, map, new MaterialEventRowMapper());
+        if(materialEventList.size() >0)
+            return materialEventList.get(0);
+        else return null;
+
+    }
+
+    @Override
+    public void createAccountPayable(MaterialUsed materialUsed){
+        String sql = " INSERT account_payable ( supplier, month, material_event_id, payable_amount, last_modified_date, already_paid) VALUES ( :supplier, :month, :material_event_id, :payable_amount, :last_modified_date, :already_paid) ";
+        Map<String, Object> map = new HashMap<>();
+
+        String name =  materialUsed.getMaterialName();
+        Material material = costMgmtDao.getMaterialByName(name);
+        map.put(" supplier",material.getSupplier());
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Integer month = timestamp.toLocalDateTime().getMonthValue();
+        map.put("month", month);
+        map.put("payable_amount", materialUsed.getAmount());
+        map.put("last_modified_date", timestamp);
+        map.put("already_paid", false   );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update( sql, new MapSqlParameterSource(map), keyHolder);
+
+
+    }
+
+    @Override
+    public void  payToSupplier(Integer payableId, Boolean alreadyPaid){
+
+        String sql = "  UPDATE account_payable SET already_paid = :already_paid WHERE payableId = :payableId  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("already_paid", alreadyPaid);
+        map.put("payableId", payableId);
+        namedParameterJdbcTemplate.update(sql, map);
+
+    }
+
+    @Override
+    public AccountPayable getPayableById(Integer payableId){
+
+        String sql = " SELECT * FROM account_payable WHERE payable_id = :payableId   ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("payableId", payableId);
+        List<AccountPayable> payableList =  namedParameterJdbcTemplate.query(sql,map, new AccountPayableRowMapper());
+
+        if(payableList.size() >0)
+            return payableList.get(0);
+        else return null;
+    }
+
+    @Override
+    public List<AccountPayable> getPayable(QueryPara queryPara){
+
+        String sql = " SELECT * FROM account_payable WHERE 1=1 ";
+        Map<String, Object> map = new HashMap<>();
+
+        if(queryPara.getSearch() != null){
+            sql = sql+ " AND search LIKE :search  ";
+            map.put("search", queryPara.getSearch());
+
+        }
+
+        sql = sql+ " ORDER BY :orderBy " + " "+ queryPara.getSort();
+        map.put("orderBy", queryPara.getOrderBy());
+        sql = sql+ " LIMIT :limit  OFFSET :offset  ";
+        map.put("limit", queryPara.getLimit());
+        map.put("offset", queryPara.getOffset());
+
+        List<AccountPayable> accountPayableList = namedParameterJdbcTemplate.query(sql, map, new AccountPayableRowMapper());
+        if (accountPayableList.size() >0)
+            return accountPayableList;
+        else return null;
+
+    }
 
 
 }

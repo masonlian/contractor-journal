@@ -19,7 +19,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -228,10 +227,11 @@ public class ProjectsDaoImpl implements ProjectsDao {
     }
 
     @Override
-    public void updateProfitById(Integer projectId) {
+    public void updateProfitById(Integer projectId,BigDecimal profit) {
         String sql = "UPDATE projects SET profit= :profit  WHERE project_id = :project_id    ";
         Map<String, Object> map = new HashMap();
         map.put("project_id", projectId);
+        map.put("profit", profit);
         namedParameterJdbcTemplate.update(sql, map);
     }
 
@@ -308,14 +308,14 @@ public class ProjectsDaoImpl implements ProjectsDao {
          else return null;
     }
 
+    @Override
+    public void updateBudgetById( Integer projectId, BigDecimal budget){
 
-
-
-
-
-
-
-
-
+         String sql =  " UPDATE projects SET budget = :budget  WHERE project_id = :project_id  ";
+         Map<String, Object> map = new HashMap();
+         map.put("project_id", projectId);
+         map.put("budget",budget);
+         namedParameterJdbcTemplate.update(sql, map);
+    }
 
 }

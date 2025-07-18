@@ -13,6 +13,16 @@ public class Material{
     private String imageUrl;
     private BigDecimal unitPrice;
 
+    public String getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
+    private String supplier;
+
 
 
     public String getMaterialType() {

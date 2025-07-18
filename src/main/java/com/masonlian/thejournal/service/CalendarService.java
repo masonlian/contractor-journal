@@ -22,10 +22,6 @@ public interface CalendarService {
    void updateLaborEvent(Integer eventId, LaborEvent laborEvent);
    void deleteLaborEvent(Integer eventId);
 
-   void createMaterialEvent(Integer eventId, MaterialEventRequst createMaterialEventRequest);
-   List<MaterialEvent> getMaterialUsedById(Integer eventId);
-   void  updateMaterialEvent(Integer eventId, MaterialUsed materialUsed);
-
 
    void attendanceCheck(Integer eventId, CustomUserDetails user, AttendanceRequest attendanceRequest);
    BigDecimal updateDailyExpenses(Integer eventId,BigDecimal newExpenses);

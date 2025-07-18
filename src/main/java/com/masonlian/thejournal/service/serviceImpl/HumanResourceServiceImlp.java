@@ -6,6 +6,7 @@ import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
 import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.model.Salary;
+import com.masonlian.thejournal.service.FinancialService;
 import com.masonlian.thejournal.service.HumanResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,8 @@ public class HumanResourceServiceImlp implements HumanResourceService {
 
     @Autowired
     private HumanResourceDao humanResourceDao;
+    @Autowired
+    private FinancialService financialService;
 
 
     @Override
@@ -77,6 +80,9 @@ public class HumanResourceServiceImlp implements HumanResourceService {
        laborMonthSalary.setActualSalary(actualSalary);
 
        humanResourceDao.updateActuallySalary(laborMonthSalary);
+       financialService.updateLaborCost(laborMonthSalary.getActualSalary());
 
     }
+
+
 }

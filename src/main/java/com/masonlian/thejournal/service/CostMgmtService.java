@@ -2,10 +2,9 @@ package com.masonlian.thejournal.service;
 
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.ConstructionRequest;
+import com.masonlian.thejournal.dto.request.CreateMaterialEventRequest;
 import com.masonlian.thejournal.dto.request.MaterialRequest;
-import com.masonlian.thejournal.model.Construction;
-import com.masonlian.thejournal.model.Material;
-import org.apache.tomcat.util.bcel.Const;
+import com.masonlian.thejournal.model.*;
 
 import java.util.List;
 
@@ -22,4 +21,17 @@ public interface CostMgmtService {
     void deleteConstructionById(Integer constructionId);
     void updateConstructionBydId (Integer constructionId,ConstructionRequest constructionRequest);
     List<Construction> getConstructionItems(QueryPara queryPara);
+
+    Integer createMaterialEvent(CreateMaterialEventRequest createMaterialEventRequest);
+    MaterialEvent  getMaterialEventById(Integer materialEventId);
+
+    void  createAccountPayable(MaterialUsed materialUsed);
+
+
+    void  payToSupplier(Integer payableId, Boolean alreadyPaid);
+    AccountPayable  getPayableById( Integer payableId);
+
+    List<AccountPayable> getPayable(QueryPara queryPara);
+
+
 }

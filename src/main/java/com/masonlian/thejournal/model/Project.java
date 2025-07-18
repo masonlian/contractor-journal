@@ -20,6 +20,16 @@ public class Project {
     private Integer ConstructionPeriod;
     private BigDecimal balance;
 
+    public Boolean getFinish() {
+        return finish;
+    }
+
+    public void setFinish(Boolean finish) {
+        this.finish = finish;
+    }
+
+    private Boolean finish;
+
     public Integer getConstructionPeriod() {
         return ConstructionPeriod;
     }

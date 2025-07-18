@@ -21,7 +21,7 @@ public interface ProjectsDao {
     void updateProjectById(Integer projectId,ProjectRequest projectRequest);
     List<Project> getProjects(QueryPara queryPara);
     Project getProjectByName(String projectName);
-    void updateProfitById(Integer projectId);
+    void updateProfitById(Integer projectId,BigDecimal profit);
 
     //報價單資料操作
     Integer createQuotation(Integer projectId, QuotationRequest quotationRequest);
@@ -40,6 +40,7 @@ public interface ProjectsDao {
     void updateBalance(Integer projectId , BigDecimal balance);
     Received getReceivedById(Integer receivedId);
     List<Received> getReceivedByProjectId(Integer projectId);
+    void updateBudgetById( Integer projectId, BigDecimal budget);
 
 
 

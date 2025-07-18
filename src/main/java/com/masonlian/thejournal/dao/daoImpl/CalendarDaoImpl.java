@@ -130,39 +130,8 @@ public class CalendarDaoImpl implements CalendarDao {
         namedParameterJdbcTemplate.update(sql, map);
     }
 
-    @Override
-    public void createMaterialEvent(Integer eventId, List<MaterialEvent> materialEventList) {
-
-        String sql= "INSERT  material_events ( event_id, material_name, unit, amount) VALUE ( event_id, material_name, unit, amount)";
 
 
-        MapSqlParameterSource[] mapSqlParameterSource = new MapSqlParameterSource[materialEventList.size()];
-        for(int i = 0;i<materialEventList.size();i++){
-           MaterialEvent materialEvent = materialEventList.get(i);
-
-
-           mapSqlParameterSource[i] = new MapSqlParameterSource();
-           mapSqlParameterSource[i].addValue("event_id", eventId);
-           mapSqlParameterSource[i].addValue("unit", materialEvent.getUnit());
-           mapSqlParameterSource[i].addValue("material_name", materialEvent.getMaterialName());
-           mapSqlParameterSource[i].addValue("amount", materialEvent.getAmount());
-
-
-           namedParameterJdbcTemplate.batchUpdate(sql, mapSqlParameterSource);
-        }
-
-
-    }
-
-    @Override
-    public void updateMaterialCost(Integer eventId,BigDecimal totalAmount){
-        String sql = "UPDATE material_events SET material_cost = :material_cost WHERE event_id = :event_id   ";
-        Map<String, Object> map = new HashMap<>();
-        map.put("material_cost", totalAmount);
-        map.put("event_id", eventId);
-        namedParameterJdbcTemplate.update(sql, map);
-
-    }
 
     @Override
     public  List<LaborRole> getAttendancesList(Integer eventId){
@@ -198,17 +167,6 @@ public class CalendarDaoImpl implements CalendarDao {
 
     }
 
-    @Override
-    public void attendanceCheck(LaborRole laborRole, AttendanceRequest attendanceRequest){
-
-        String sql = " UPDATE labor_event SET attendance = :attendance WHERE name= :name ";
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("name", laborRole.getName());
-        map.put("attendance", attendanceRequest.getAttendance());
-
-        namedParameterJdbcTemplate.update(sql, map);
-    }
 
     @Override
     public void updateDailyExpenses(Integer eventId,BigDecimal newExpenses){
@@ -236,20 +194,6 @@ public class CalendarDaoImpl implements CalendarDao {
 
 
     }
-
-    @Override
-    public void  updateMaterialEvent(Integer eventId,MaterialEvent materialEvent){
-
-        String sql = "UPDATE material_events SET unit=:unit, amount =:amount WHERE event_id = :event_id AND material_name = :material_name   ";
-        Map<String, Object> map = new HashMap<>();
-        map.put("material_name", materialEvent.getMaterialName());
-        map.put("unit", materialEvent.getUnit());
-        map.put("amount", materialEvent.getAmount());
-        map.put("event_id", eventId);
-        namedParameterJdbcTemplate.update(sql, map);
-
-    }
-
 
 
     @Override

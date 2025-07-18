@@ -12,15 +12,12 @@ import com.masonlian.thejournal.service.CalendarService;
 import com.masonlian.thejournal.service.HumanResourceService;
 import com.masonlian.thejournal.service.ProjectsService;
 import com.masonlian.thejournal.service.UserService;
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +42,8 @@ public class CalendarServiceImpl implements CalendarService {
     private ProjectsDao projectsDao;
     @Autowired
     private HumanResourceService humanResourceService;
+    @Autowired
+    private CalendarService calendarService;
 
 
     //之後可以的話調用資料盡量都用id不要用名字
@@ -149,42 +148,6 @@ public class CalendarServiceImpl implements CalendarService {
         humanResourceDao.createAttendance(date,laborRoleList);
 
     }
-
-    @Override
-    public void createMaterialEvent(Integer eventId, MaterialEventRequst createMaterialEventRequest){
-
-
-
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        List<MaterialEvent> materialEventList = new ArrayList<>();
-
-        for(MaterialUsed materialUsed:createMaterialEventRequest.getUsedList()){
-
-            Material material = costMgmtDao.getMaterialByName(materialUsed.getMaterialName());
-
-            BigDecimal unit=  BigDecimal.valueOf(materialUsed.getUnit());
-            totalAmount.add(material.getUnitPrice().multiply(unit) );
-
-            MaterialEvent materialEvent = new MaterialEvent();
-
-            materialEvent.setEventId(eventId);
-            materialEvent.setMaterialName(materialUsed.getMaterialName());
-            materialEvent.setAmount( material.getUnitPrice().multiply(unit));
-            materialEvent.setUnit(materialUsed.getUnit());
-
-            materialEventList.add(materialEvent);
-
-        }
-
-        updateDailyExpenses(eventId,totalAmount);
-
-
-        calendarDao.createMaterialEvent(eventId, materialEventList);
-
-        calendarDao.updateMaterialCost(eventId,totalAmount);
-
-    }
-
 
     //
     // 從create 和update labor/material event的當下 就要更新updateDaily的計算了 incident_expense 為常數
@@ -312,59 +275,13 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
-    public List<MaterialEvent> getMaterialUsedById(Integer eventId){
-
-        return  calendarDao.getMaterialUsedById(eventId);
-
-    }
-
-    @Override
-    public void  updateMaterialEvent(Integer eventId, MaterialUsed materialUsed){
-
-        CalendarEvent calendarEvent = calendarDao.getCalendarEventById(eventId);
-
-        BigDecimal beforeCost = calendarEvent.getMaterialCost();
-        BigDecimal afterCost = BigDecimal.ZERO;
-
-        MaterialEvent updateEvent = new MaterialEvent();
-        Material material = costMgmtDao.getMaterialByName(materialUsed.getMaterialName());
-
-        updateEvent.setEventId(eventId);
-        updateEvent.setMaterialName(materialUsed.getMaterialName());
-        updateEvent.setUnit(materialUsed.getUnit());
-
-        BigDecimal unitPrice =  material.getUnitPrice();
-        BigDecimal unit= BigDecimal.valueOf(materialUsed.getUnit());
-        BigDecimal amount = unitPrice.multiply(unit);
-
-        updateEvent.setAmount(amount);
-
-        calendarDao.updateMaterialEvent(eventId, updateEvent);
-
-        List<MaterialEvent> materialEventList = calendarDao.getMaterialUsedById(eventId);
-
-        for(MaterialEvent materialEvent: materialEventList){
-
-            afterCost = afterCost.add(materialEvent.getAmount());
-
-
-        }
-
-
-        calendarDao.updateMaterialCost(eventId,afterCost);
-
-        BigDecimal difference  = afterCost.subtract(beforeCost);
-        updateDailyExpenses(eventId,difference);
-
-
-    }
-    @Override
     public Integer finishProject(Integer eventId, CalendarEventRequest calendarEventRequest){
 
         String name = calendarEventRequest.getProjectName();
         Project project = projectsDao.getProjectByName(name);
 
         if(calendarEventRequest.getFinished()==true){
+
 
             projectsService.updateProfitById(project.getProjectId());
             projectsDao.finishProject(project.getProjectId(),calendarEventRequest.getFinished());
