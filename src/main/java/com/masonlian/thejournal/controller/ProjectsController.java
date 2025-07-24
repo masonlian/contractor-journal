@@ -1,6 +1,6 @@
 package com.masonlian.thejournal.controller;
 
-import com.masonlian.thejournal.dto.CustomUserDetails;
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
 import com.masonlian.thejournal.dto.request.NewReceived;
@@ -9,7 +9,6 @@ import com.masonlian.thejournal.dto.request.QuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
-import com.masonlian.thejournal.model.QuotationItem;
 import com.masonlian.thejournal.model.Received;
 import com.masonlian.thejournal.service.ProjectsService;
 import com.masonlian.thejournal.util.Page;
@@ -29,13 +28,14 @@ import java.util.List;
 //時間關係先CREATE跟READ功能，UPDATE跟DELETE再說。
 @Validated
 @RestController
-public class ProjecetsController {
+public class ProjectsController {
 
     @Autowired
     private ProjectsService projectsService;
 
 
     //創建專案
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/projects")
     public ResponseEntity<Project> createProjects(@RequestBody ProjectRequest projectRequest
 
@@ -85,8 +85,9 @@ public class ProjecetsController {
 
 
     //調閱專案內容以及分頁功能
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
     @Valid
-    @GetMapping("allprojects") //set
+    @GetMapping("projects") //set
     public ResponseEntity<Page<Project>> getProjects(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "budget") String orderBy,
@@ -119,7 +120,8 @@ public class ProjecetsController {
 
     //透過報價單的設計除了能夠建立預算進入案件之外，還能調整成本資料庫。
 
-    @PostMapping("/project/{projectId}/quotation")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PostMapping("/projects/{projectId}/quotation")
     public ResponseEntity<Quotation> createQuotation(@PathVariable Integer projectId , @RequestBody QuotationRequest quotationRequest) {
 
         Integer quotationId = projectsService.createQuotation(projectId, quotationRequest);
@@ -130,7 +132,8 @@ public class ProjecetsController {
 
     }
 
-    @PostMapping("project/{quotationId}/item")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PostMapping("/projects/{quotationId}/item")
     public ResponseEntity<?> createQuotationItem(@PathVariable Integer quotationId, @RequestBody QuotationItemRequest quotationItemRequest) {
 
         projectsService.createQuotationItem(quotationId, quotationItemRequest);
@@ -141,7 +144,8 @@ public class ProjecetsController {
     }
 
 
-    @GetMapping("/projects/quotation/{projectId}")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @GetMapping("/projects/{projectId}/quotation/")
     public ResponseEntity<List<QuotationWithItemDto>> getQuotations(@PathVariable Integer projectId) {
 
         List<QuotationWithItemDto> quotationList  = projectsService.getQuotations(projectId);
@@ -151,6 +155,7 @@ public class ProjecetsController {
 
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/projects/received ")
     public ResponseEntity<Received> createReceived(@RequestBody NewReceived newReceived) {
 
@@ -160,7 +165,8 @@ public class ProjecetsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(received);
     }
 
-    @GetMapping("/projects/received/{projectId} ")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @GetMapping("/projects/{projectId}/received ")
     public ResponseEntity<List<Received>> getReceived(@PathVariable Integer projectId) {
 
         List<Received> receivedList = projectsService.getReceivedByProjectId(projectId);

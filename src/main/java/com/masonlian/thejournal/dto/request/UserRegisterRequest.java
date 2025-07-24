@@ -21,6 +21,9 @@ public class UserRegisterRequest {
 
     private String email;
     private String password;
+    private String name;
+    private String level;
+
 
     public String getLevel() {
         return level;
@@ -30,5 +33,15 @@ public class UserRegisterRequest {
         this.level = level;
     }
 
-    private String level;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+
 }

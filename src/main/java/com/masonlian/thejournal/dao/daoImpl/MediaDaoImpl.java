@@ -106,5 +106,18 @@ public class MediaDaoImpl implements MediaDao {
         namedParameterJdbcTemplate.update(sql, map);
     }
 
+    @Override
+    public List<Media> getMediumByProjectId(Integer projectId){
+        String sql  = "SELECT * FROM media_repository WHERE project_id = :project_id  ";
+        Map<String,Object> map = new HashMap<>();
+        map.put("project_id", projectId);
+        List<Media> mediaList = namedParameterJdbcTemplate.query(sql, map, new MediaRowMapper());
+        if(mediaList.size() > 0)
+            return mediaList;
+        return null;
+
+
+    }
+
 }
 

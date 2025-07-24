@@ -28,4 +28,5 @@ public interface HumanResourceDao {
     Salary getSalary(Integer month,Integer employeeId);
     void updateExpectedSalary(Salary monthSalary);
     void updateActuallySalary (Salary monthSalary);
+    List<Salary> getSalaries(QueryPara  employeeQueryPara);
 }

@@ -1,33 +1,14 @@
 package com.masonlian.thejournal.dto.request;
 
-import java.math.BigDecimal;
-
 public class ProjectRequest {
 
     private String projectName;
     private String description;
     private String owner;
     private String address;
-    private BigDecimal budget;
-    private BigDecimal costEstimate;
     private String projectManager;
+    private Integer constructionPeriod;
 
-    public String getProjectManager() {
-        return projectManager;
-    }
-
-    public void setProjectManager(String projectManager) {
-        this.projectManager = projectManager;
-    }
-
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
 
     public String getProjectName() {
         return projectName;
@@ -35,6 +16,14 @@ public class ProjectRequest {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getAddress() {
@@ -45,30 +34,27 @@ public class ProjectRequest {
         this.address = address;
     }
 
-    public BigDecimal getBudget() {
-        return budget;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setBudget(BigDecimal budget) {
-        this.budget = budget;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
-    public BigDecimal getCostEstimate() {
-        return costEstimate;
+    public String getProjectManager() {
+        return projectManager;
     }
 
-    public void setCostEstimate(BigDecimal costEstimate) {
-        this.costEstimate = costEstimate;
+    public void setProjectManager(String projectManager) {
+        this.projectManager = projectManager;
     }
 
-
-    public String getDescription() {
-        return description;
+    public Integer getConstructionPeriod() {
+        return constructionPeriod;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setConstructionPeriod(Integer constructionPeriod) {
+        this.constructionPeriod = constructionPeriod;
     }
-
-
 }

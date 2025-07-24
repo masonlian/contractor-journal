@@ -1,6 +1,6 @@
 package com.masonlian.thejournal.service;
 
-import com.masonlian.thejournal.dto.CustomUserDetails;
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;

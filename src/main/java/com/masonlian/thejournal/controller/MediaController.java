@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +23,8 @@ public class MediaController {
     @Autowired
     private MediaService mediaService;
 
-    @PostMapping("c-media")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @PostMapping("/media")
     public ResponseEntity<Media> createMedia(@RequestBody MediaRequest mediaRequest) {
 
         Integer mediaId = mediaService.createMedia(mediaRequest);
@@ -30,7 +32,8 @@ public class MediaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(media);
     }
 
-    @GetMapping("media")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2','L3')")
+    @GetMapping("/media")
     public ResponseEntity<Page<Media>> getMedias(@RequestParam (defaultValue = "1")@Max(5)@Min(0) Integer offset,
                                                  @RequestParam (name="limit",defaultValue="5") @Max(100)Integer limit,
 
@@ -63,7 +66,8 @@ public class MediaController {
         return ResponseEntity.status(HttpStatus.OK).body(mediaPage);
     }
 
-    @DeleteMapping("/media/{mediumId}")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @DeleteMapping("/media")
     public ResponseEntity<Media> deleteMedia(@PathVariable Integer mediumId) {
 
         mediaService.deleteMediumById(mediumId);
@@ -71,11 +75,23 @@ public class MediaController {
 
     }
 
-    @PostMapping("/media/{mediumId}")
-    public ResponseEntity<Media> updateMedia(@PathVariable Integer mediumId, @RequestBody MediaRequest mediaRequest) {
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @PostMapping("/media/{mediaId}")
+    public ResponseEntity<Media> updateMedia(@PathVariable Integer mediaId, @RequestBody MediaRequest mediaRequest) {
 
-       mediaService.updateMediumById(mediumId,mediaRequest);
+       mediaService.updateMediumById(mediaId,mediaRequest);
        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @GetMapping ("/{projectId}/blueprint")
+    public ResponseEntity<List<Media>> getBlueprintById(@PathVariable Integer projectId ) {
+
+        List<Media> blueprint = mediaService.getBlueprintById(projectId);
+        return ResponseEntity.status(HttpStatus.OK).body(blueprint);
+
+
 
     }
 

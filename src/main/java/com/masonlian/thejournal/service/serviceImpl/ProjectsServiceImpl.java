@@ -2,9 +2,8 @@ package com.masonlian.thejournal.service.serviceImpl;
 
 import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.dao.CostMgmtDao;
-import com.masonlian.thejournal.dao.FinancialDao;
 import com.masonlian.thejournal.dao.ProjectsDao;
-import com.masonlian.thejournal.dto.CustomUserDetails;
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
 import com.masonlian.thejournal.dto.request.*;
@@ -24,8 +23,9 @@ public class ProjectsServiceImpl implements ProjectsService {
 
     @Autowired
     ProjectsDao projectsDao;
+
     @Autowired
-    private CostMgmtDao costMgmtDao;
+    CostMgmtDao costMgmtDao;
 
     @Autowired
     FinancialService financialService;

@@ -1,6 +1,6 @@
 package com.masonlian.thejournal.service;
 
-import com.masonlian.thejournal.dto.CustomUserDetails;
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
 import com.masonlian.thejournal.dto.request.NewReceived;
@@ -9,7 +9,6 @@ import com.masonlian.thejournal.dto.request.QuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
-import com.masonlian.thejournal.model.QuotationItem;
 import com.masonlian.thejournal.model.Received;
 
 import java.math.BigDecimal;

@@ -5,6 +5,7 @@ import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
 import com.masonlian.thejournal.model.LaborRole;
+import com.masonlian.thejournal.model.Salary;
 import com.masonlian.thejournal.service.HumanResourceService;
 import com.masonlian.thejournal.util.Page;
 import jakarta.validation.constraints.Max;
@@ -13,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
 public class HumanResourceController {
 
@@ -26,7 +29,7 @@ public class HumanResourceController {
 
     //主管創建人事檔案
     @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @PostMapping("h-resource")
+    @PostMapping("/employee")
     public ResponseEntity<LaborRole>  createProfile(@RequestBody CreateLaborRoleRequest createLaborRoleRequest) {
 
         Integer employeeId= humanResourceService.createProfile(createLaborRoleRequest);
@@ -35,7 +38,7 @@ public class HumanResourceController {
     }
 
     @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @GetMapping("profiles")
+    @GetMapping("/employee")
     public ResponseEntity<Page<LaborRole>> getEmployees(@RequestParam (required = false) String search,
                                                         @RequestParam  (required = false) Level level,
 
@@ -70,7 +73,7 @@ public class HumanResourceController {
     }
 
     @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @DeleteMapping("/layoff/{employeeId}")
+    @DeleteMapping("/employee/{employeeId}")
     public ResponseEntity<LaborRole> deleteProfile(@PathVariable Integer employeeId) {
 
         humanResourceService.deleteProfileById(employeeId);
@@ -79,7 +82,7 @@ public class HumanResourceController {
     }
 
     @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @PostMapping("/update/{employeeId}")
+    @PostMapping("/employee/{employeeId}")
     public ResponseEntity<LaborRole> updateProfileById(@PathVariable Integer employeeId,
                                                        @RequestBody LaborEventQueryRequest laborEventQueryRequest) {
 
@@ -88,6 +91,44 @@ public class HumanResourceController {
 
 
     }
+
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @GetMapping("/employee/salaries")
+    public ResponseEntity<Page<Salary>> getSalaries(@RequestParam (defaultValue = "desc")String sort,
+                                                   @RequestParam (defaultValue = "month" )String orderBy,
+
+                                                  @RequestParam (name = "limit", defaultValue= "10") @Max(50)@Min(0) Integer limit,
+                                                  @RequestParam ( defaultValue = "5" ) @Min(0) Integer offset
+
+
+    ) {
+
+        QueryPara employeeQuery =  new QueryPara();
+
+        employeeQuery.setOrderBy(orderBy);
+        employeeQuery.setSort(sort);
+        employeeQuery.setLimit(limit);
+        employeeQuery.setOffset(offset);
+
+        List<Salary> salaries =  humanResourceService.getSalaries(employeeQuery);
+
+        Page<Salary> salariesPage = new Page<>();
+
+        salariesPage.setTotal(salaries.size());
+        salariesPage.setOffset(offset);
+        salariesPage.setLimit(limit);
+        salariesPage.setResult(salaries);
+
+        return ResponseEntity.status(HttpStatus.OK).body(salariesPage);
+
+
+
+
+
+
+
+    }
+
 
 
 

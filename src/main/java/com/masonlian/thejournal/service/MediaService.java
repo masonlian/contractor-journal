@@ -12,4 +12,5 @@ public interface MediaService {
     List<Media> getMedia(QueryPara queryPara);
     void deleteMediumById(Integer mediumId);
     void updateMediumById(Integer mediumId, MediaRequest mediaRequest);
+    List<Media> getBlueprintById(Integer projectId);
 }

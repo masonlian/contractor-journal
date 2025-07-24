@@ -1,6 +1,6 @@
 package com.masonlian.thejournal.controller;
 
-import com.masonlian.thejournal.dto.CustomUserDetails;
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
@@ -13,11 +13,12 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 //在實作的過程當中如果有感覺不對勁地方通常代表something really go wrong.
@@ -26,11 +27,14 @@ import java.util.List;
 public class CalenderController {
     @Autowired
     CalendarService calendarService;
+
+    @Autowired
     ProjectsService projectsService;
 
 
     //日曆功能
-    @PostMapping("event")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PostMapping("/calendar/event")
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventRequest calendarEventRequest) {
 
         Integer eventId = calendarService.createCalendarEvent(calendarEventRequest);
@@ -42,14 +46,15 @@ public class CalenderController {
 
     }
 
-    @DeleteMapping("/event/{eventId}")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @DeleteMapping("/calendar/event/{eventId}")
     public ResponseEntity<CalendarEvent> deleteCalendarEventById(@PathVariable Integer eventId) {
 
         calendarService.deleteCalendarEventById(eventId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-    @PostMapping("/event/{eventId}")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PutMapping("/calendar/event/{eventId}")
     public ResponseEntity<CalendarEvent> updateCalendarEvent(@PathVariable Integer eventId, @RequestBody CalendarEventRequest calendarEventRequest) {
 
         calendarService.updateCalendarEvent(eventId, calendarEventRequest);
@@ -57,10 +62,11 @@ public class CalenderController {
 
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
     @GetMapping("/calendar")
     public ResponseEntity<Page<Calendar>> getEventsByCalendarDate(@RequestParam (name="limit", defaultValue = "10")@Max(100)Integer limit,
                                                                   @RequestParam (defaultValue = "0") @Min(0) Integer offset,
-                                                                  @PathVariable  Date calendarDate) {
+                                                                  @PathVariable Timestamp calendarDate) {
         QueryPara calendarQueryPara = new QueryPara();
         calendarQueryPara.setLimit(limit);
         calendarQueryPara.setOffset(offset);
@@ -79,7 +85,8 @@ public class CalenderController {
 
 
     //分段提交
-    @PostMapping("/calendar/labor/{eventId}")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PostMapping("/calendar/event/{eventId}/labor")
     public ResponseEntity <?> createLaborEvent(@PathVariable Integer eventId, @RequestBody CreateLaborEventRequest createLaborEventRequest) {
 
         calendarService.createLaborEvent(eventId,createLaborEventRequest); //回傳人力事件的列表id
@@ -91,7 +98,7 @@ public class CalenderController {
 
     //排班功能
 
-    @GetMapping("/calendar/labor/{eventId}")
+    @GetMapping("/calendar/{eventId}/labor")
     public ResponseEntity<List<LaborRole>>  getAttendancesList( @PathVariable Integer eventId ){
 
         List<LaborRole> laborRoleList =  calendarService.getAttendancesList(eventId);
@@ -100,6 +107,7 @@ public class CalenderController {
 
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/calendar/{eventId}")
     public ResponseEntity<LaborRole> updateLaborEvent(@PathVariable Integer eventId , @RequestBody LaborEvent laborEvent) {
 
@@ -109,6 +117,7 @@ public class CalenderController {
 
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @DeleteMapping("/calendar/{eventId}")
     public ResponseEntity<LaborRole> deleteLaborEventById(@PathVariable Integer eventId) {
 
@@ -120,6 +129,7 @@ public class CalenderController {
 
 
     //將使用者的資訊外包給前端自動送入後端 ，也就是說
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2','L3')")
     @PutMapping("/calendar/{eventId}/attendance")
     public ResponseEntity<Boolean> AttendanceCheck(@PathVariable Integer eventId, @AuthenticationPrincipal CustomUserDetails user, @RequestBody AttendanceRequest attendanceRequest) {
 
@@ -133,7 +143,8 @@ public class CalenderController {
 
 
 
-    @PutMapping("/calendar/{eventId}/ ")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PutMapping("/calendar/event/{eventId} ")
     public ResponseEntity<Project> finishProject(@PathVariable Integer eventId ,@Valid CalendarEventRequest calendarEventRequest) {
 
         Integer projectId = calendarService.finishProject(eventId,calendarEventRequest);
@@ -141,10 +152,6 @@ public class CalenderController {
         return ResponseEntity.status(HttpStatus.OK).body(project);
 
     }
-
-
-
-
 
 }
 

@@ -10,6 +10,7 @@ public class MediaRequest {
     private String resourceUrl;
     private String description;
 
+
     public ConstructionCategory getConstructionCategory() {
         return constructionCategory;
     }

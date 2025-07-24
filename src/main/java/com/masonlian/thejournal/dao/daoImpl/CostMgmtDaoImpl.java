@@ -28,9 +28,6 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @Autowired
-    private CostMgmtDao costMgmtDao;
-
 
     @Override
     public Integer createMaterial(MaterialRequest materialRequest){
@@ -271,7 +268,7 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
         Map<String, Object> map = new HashMap<>();
 
         String name =  materialUsed.getMaterialName();
-        Material material = costMgmtDao.getMaterialByName(name);
+        Material material = getMaterialByName(name);
         map.put(" supplier",material.getSupplier());
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());

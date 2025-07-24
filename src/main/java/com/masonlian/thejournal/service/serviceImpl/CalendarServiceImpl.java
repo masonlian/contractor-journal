@@ -1,10 +1,9 @@
 package com.masonlian.thejournal.service.serviceImpl;
 
 import com.masonlian.thejournal.dao.CalendarDao;
-import com.masonlian.thejournal.dao.CostMgmtDao;
 import com.masonlian.thejournal.dao.HumanResourceDao;
 import com.masonlian.thejournal.dao.ProjectsDao;
-import com.masonlian.thejournal.dto.CustomUserDetails;
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
@@ -32,8 +31,7 @@ public class CalendarServiceImpl implements CalendarService {
     CalendarDao calendarDao;
     @Autowired
     HumanResourceDao humanResourceDao;
-    @Autowired
-    CostMgmtDao costMgmtDao;
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -42,8 +40,6 @@ public class CalendarServiceImpl implements CalendarService {
     private ProjectsDao projectsDao;
     @Autowired
     private HumanResourceService humanResourceService;
-    @Autowired
-    private CalendarService calendarService;
 
 
     //之後可以的話調用資料盡量都用id不要用名字

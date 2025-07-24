@@ -26,8 +26,7 @@ public class CostMgmtServiceImpl implements CostMgmtService {
     private CostMgmtDao costMgmtDao;
     @Autowired
     private ProjectsService projectsService;
-    @Autowired
-    private CostMgmtService costMgmtService;
+
     @Autowired
     private FinancialServiceImpl financialService;
 
@@ -111,7 +110,7 @@ public class CostMgmtServiceImpl implements CostMgmtService {
             BigDecimal amount = materialUsed.getAmount();
             totalAmount = totalAmount.add(amount);
 
-            costMgmtService.createAccountPayable(materialUsed);
+            createAccountPayable(materialUsed);
 
             materialUsedList.add(materialUsed);
 

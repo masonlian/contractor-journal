@@ -28,8 +28,8 @@ public class CostMgmtController {
     @Autowired
     private CostMgmtService costMgmtService;
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @PostMapping("/costmgmt/material")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @PostMapping("/cost/material")
     public ResponseEntity<Material>  createMaterial(@RequestBody MaterialRequest materialRequest ){
 
 
@@ -38,8 +38,8 @@ public class CostMgmtController {
         return ResponseEntity.status(HttpStatus.CREATED).body(material);
     }
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @DeleteMapping("/costmgmt/material/{materialId}")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @DeleteMapping("/cost/material/{materialId}")
     public ResponseEntity<Material>  deleteMaterialById(@PathVariable("materialId") Integer materialId){
 
         costMgmtService.deleteMaterialById(materialId);
@@ -48,7 +48,7 @@ public class CostMgmtController {
     }
 
     @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @PostMapping("/costmgmt/material/{materialId}")
+    @PostMapping("/cost/material/{materialId}")
     public ResponseEntity<Material>  updateMaterialById(@PathVariable Integer materialId,
                                                     @RequestBody MaterialRequest materialRequest ){
 
@@ -57,7 +57,8 @@ public class CostMgmtController {
     }
 
 
-    @PostMapping("/costmgmt/construnction")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @PostMapping("/cost/construction")
     public ResponseEntity<Construction>  createConstruction(@RequestBody ConstructionRequest constructionRequest ){
 
         Integer constructionId =  costMgmtService.createConstruction(constructionRequest);
@@ -67,7 +68,8 @@ public class CostMgmtController {
 
     }
 
-   @GetMapping ("/costmgmt/material/")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2','L3')")
+   @GetMapping ("/cost/material")
    public ResponseEntity<Page<Material>> getMaterial (@RequestParam  (defaultValue = "0")@Max(5) @Min(0) Integer offset,
                                                       @RequestParam (name = "limit", defaultValue="100") @Max(100) Integer limit,
 
@@ -106,7 +108,8 @@ public class CostMgmtController {
 
 
 
-    @DeleteMapping("/costmgmt/construction/{constructionId}")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @DeleteMapping("/cost/construction/{constructionId}")
     public ResponseEntity<Construction>  deleteConstructionById(@PathVariable Integer constructionId ){
 
         costMgmtService.deleteConstructionById(constructionId);
@@ -114,7 +117,8 @@ public class CostMgmtController {
 
     }
 
-    @PostMapping("/costmgmt/construction/{constructionId}")
+    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @PostMapping("/cost/construction/{constructionId}")
     public ResponseEntity <Construction> updateConstructionById(@PathVariable Integer constructionId ,@RequestBody ConstructionRequest constructionRequest ){
 
         costMgmtService.updateConstructionBydId(constructionId,constructionRequest);
@@ -123,7 +127,8 @@ public class CostMgmtController {
 
     }
 
-    @GetMapping("/costmgmt/construction")
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    @GetMapping("/cost/construction")
     public ResponseEntity<Page<Construction>> getConstructionItems(@RequestParam  (defaultValue = "0")@Max(5) @Min(0) Integer offset,
                                                              @RequestParam (name = "limit", defaultValue="100") @Max(100) Integer limit,
 
@@ -150,6 +155,7 @@ public class CostMgmtController {
 
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/material/event")
     public ResponseEntity<MaterialEvent>  createMaterialEvent(@RequestBody CreateMaterialEventRequest createMaterialEventRequest){
 
@@ -160,6 +166,7 @@ public class CostMgmtController {
 
     }
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PutMapping("/payable/{payableId}  ") //
     public ResponseEntity<AccountPayable> payToSupplier( @PathVariable Integer payablId ,  @RequestBody Boolean alreadyPaid  ){
 
@@ -170,6 +177,7 @@ public class CostMgmtController {
 
     } //
 
+    @PreAuthorize("hasAnyAuthority('L0','L1')")
     @GetMapping("/payable" )
     public ResponseEntity<List<AccountPayable>> getPayable(@RequestParam   String search ,
                                                     @RequestParam String orderBy,

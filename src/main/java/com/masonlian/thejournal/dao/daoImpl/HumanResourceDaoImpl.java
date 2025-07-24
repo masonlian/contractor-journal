@@ -212,4 +212,23 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
 
     }
 
+    @Override
+    public List<Salary> getSalaries(QueryPara  employeeQueryPara){
+
+        String sql = " SELECT * FROM salary  WHERE 1=1   ";
+        Map<String,Object> map = new HashMap<>();
+
+        sql = sql + "ORDER BY :orderBy "+" "+ employeeQueryPara.getSort();
+        map.put("orderBy",employeeQueryPara.getOrderBy());
+
+        sql = sql+ " LIMIT :limit OFFSET :offset";
+
+        List<Salary> salaries =  namedParameterJdbcTemplate.query(sql,map,new SalaryRowMapper());
+        if(salaries.size()>0){
+            return salaries;
+        }else return null;
+
+
+    }
+
 }

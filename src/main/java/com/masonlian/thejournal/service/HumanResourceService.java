@@ -17,4 +17,6 @@ public interface HumanResourceService {
     void  updateProfileById (Integer employeeId, LaborEventQueryRequest laborEventQueryRequest);
     void updateExpectedSalary(Salary laborMonthSalary);
     void updateActualSalary(Salary laborMonthSalary);
+
+    List<Salary> getSalaries(QueryPara  employeeQueryPara);
 }

@@ -9,8 +9,10 @@ import java.util.List;
 public interface MediaDao {
 
      Integer createMedia(MediaRequest mediaRequest);
-     Media getMediaById(Integer id);
+     Media getMediaById(Integer mediaId);
      List<Media> getMedia(QueryPara queryPara);
      void deleteMediumById(Integer mediumId);
      void updateMediumById(Integer mediumId, MediaRequest mediaRequest);
+     List<Media> getMediumByProjectId(Integer projectId);
+
 }

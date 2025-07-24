@@ -1,24 +1,27 @@
-package com.masonlian.thejournal.dto;
+package com.masonlian.thejournal.config;
 
 import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
 
 //分配權限
+
 public class CustomUserDetails implements UserDetails {
+
     private String email;
-    private String password;
+    private Integer userId;
     private Level level;
 
 
     public CustomUserDetails(User user) {
         this.email = user.getEmail();
-        this.password = user.getPassword();
+        this.userId = user.getUserId();
         this.level = user.getLevel();
     }
 
@@ -27,11 +30,14 @@ public class CustomUserDetails implements UserDetails {
         return List.of(new SimpleGrantedAuthority(level.toString()));
     }
     @Override
-    public String getPassword() {return password;}
+    public String  getPassword(){return null;};
+
     @Override
     public String getUsername() {return email;}
 
     public Level getLevel() {return level;}
+
+    public Integer getUserId() {return userId;}
 
 
 

@@ -1,31 +1,29 @@
 package com.masonlian.thejournal.service.serviceImpl;
 
 import com.masonlian.thejournal.dao.UserDao;
-import com.masonlian.thejournal.dto.CustomUserDetails;
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.request.UserLogInRequest;
 import com.masonlian.thejournal.dto.request.UserRegisterRequest;
 import com.masonlian.thejournal.model.User;
 import com.masonlian.thejournal.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
+    final static Logger log =  LoggerFactory.getLogger(UserServiceImpl.class);
 
 
     @Override
@@ -51,30 +49,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User logIn(UserLogInRequest userLogInRequest) {
+    public User  logIn(UserLogInRequest userLogInRequest) {
 
         User user = userDao.getUserByEmail(userLogInRequest.getEmail());
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-                if (user.getEmail()==null)
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                if (user.getEmail()==null){
+                    log.warn("該電子信箱尚未註冊");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);}
                 if (passwordEncoder.matches(userLogInRequest.getPassword(),user.getPassword())) {
 
-                    CustomUserDetails customUserDetails= new CustomUserDetails(user);
-
-                    Authentication auth = new UsernamePasswordAuthenticationToken(
-                            customUserDetails,
-                            null,
-                            customUserDetails.getAuthorities()
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-
                     userDao.lastLoginTime(userLogInRequest);
-
 
                     return user;
                 }
                 else
+                    log.warn("密碼不正確");
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 

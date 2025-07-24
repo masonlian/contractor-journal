@@ -8,7 +8,7 @@ public interface UserService
 {
     Integer createUser(UserRegisterRequest userRegisterRequest);
     User getUserById(Integer userId);
-    User logIn( UserLogInRequest userLogInRequest);
+    User logIn(UserLogInRequest userLogInRequest);
 
 
 

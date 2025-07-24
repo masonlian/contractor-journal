@@ -84,5 +84,13 @@ public class HumanResourceServiceImlp implements HumanResourceService {
 
     }
 
+    @Override
+    public List<Salary> getSalaries(QueryPara  employeeQueryPara){
+
+        return humanResourceDao.getSalaries(employeeQueryPara);
+
+
+    }
+
 
 }

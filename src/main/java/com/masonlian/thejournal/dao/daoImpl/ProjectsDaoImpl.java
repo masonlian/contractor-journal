@@ -34,8 +34,8 @@ public class ProjectsDaoImpl implements ProjectsDao {
      @Override
      public Integer createProject(ProjectRequest projectRequest) {
 
-         String sql = " INSERT INTO projects (project_id, owner, project_name, address ,project_manager ,description, budget , cost_estimate, created_date, last_modified_date) " +
-                  " VALUE (project_id, :owner, :project_name, :address ,:project_manager, :description, :budget, :cost_estimate, :created_date, :last_modified_date) ";
+         String sql = " INSERT INTO projects (project_id, owner, project_name, address ,project_manager ,description,created_date, last_modified_date, construction_period) " +
+                  " VALUE (project_id, :owner, :project_name, :address ,:project_manager, :description, :created_date, :last_modified_date,  :construction_period) ";
          Map<String, Object> map = new HashMap();
 
          map.put("owner", projectRequest.getOwner());
@@ -43,8 +43,8 @@ public class ProjectsDaoImpl implements ProjectsDao {
          map.put("address", projectRequest.getAddress());
          map.put("project_manager", projectRequest.getProjectManager());
          map.put("description", projectRequest.getDescription());
-         map.put("budget", projectRequest.getBudget());
-         map.put("cost_estimate", projectRequest.getCostEstimate());
+         map.put("construction_period", projectRequest.getConstructionPeriod());
+
 
 
          Date now = new Date();
@@ -62,8 +62,8 @@ public class ProjectsDaoImpl implements ProjectsDao {
     @Override
     public Project getProjectById(Integer projectId){
 
-         String sql = " SELECT project_id, owner, project_name, address ,project_manager ,description, budget , profit, cost_estimate, created_date, last_modified_date, profit, stage_profit"
-                  + " FROM projects WHERE project_id = :project_id";
+         String sql = " SELECT project_id, owner, project_name, address ,project_manager ,description, budget , profit, cost_estimate, created_date, last_modified_date, finished,balance, construction_period "
+                  + " FROM projects WHERE project_id = :project_id ";
 
          Map<String, Object> map = new HashMap();
          map.put("project_id", projectId);
@@ -89,8 +89,6 @@ public class ProjectsDaoImpl implements ProjectsDao {
         map.put("project_name", projectRequest.getProjectName());
         map.put("owner", projectRequest.getOwner());
         map.put("address", projectRequest.getAddress());
-        map.put("budget", projectRequest.getBudget());
-        map.put("cost_estimate", projectRequest.getCostEstimate());
         map.put("project_manager", projectRequest.getProjectManager());
         map.put("description", projectRequest.getDescription());
         namedParameterJdbcTemplate.update(sql, map);
@@ -100,8 +98,8 @@ public class ProjectsDaoImpl implements ProjectsDao {
     @Override
     public List<Project> getProjects(QueryPara queryPara){
 
-         String sql = " SELECT  project_id, owner, project_name, address ,project_manager ,description, budget , profit, cost_estimate, created_date, last_modified_date, stage_profit "
-                 + " FROM projects WHERE 1=1";
+         String sql = " SELECT  project_id, owner, project_name, address ,project_manager ,description, budget , profit, cost_estimate, created_date, last_modified_date, construction_period, balance "
+                 + " FROM projects WHERE 1=1 ";
 
          Map<String ,Object> map = new HashMap();//接著思考根據什麼傳入搜尋條件。
 

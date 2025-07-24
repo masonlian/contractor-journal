@@ -13,12 +13,12 @@ public class Project {
     private BigDecimal budget;
     private BigDecimal costEstimate;
     private BigDecimal profit;
-    private BigDecimal stageProfit;
     private Date  creationDate;
     private Date lastModifiedDate;
     private String description;
     private Integer ConstructionPeriod;
     private BigDecimal balance;
+    private Boolean finish;
 
     public Boolean getFinish() {
         return finish;
@@ -28,7 +28,7 @@ public class Project {
         this.finish = finish;
     }
 
-    private Boolean finish;
+
 
     public Integer getConstructionPeriod() {
         return ConstructionPeriod;
@@ -136,15 +136,6 @@ public class Project {
     public void setProfit(BigDecimal profit) {
         this.profit = profit;
     }
-
-    public BigDecimal getStageProfit() {
-        return stageProfit;
-    }
-
-    public void setStageProfit(BigDecimal stageProfit) {
-        this.stageProfit = stageProfit;
-    }
-
 
 
 }
