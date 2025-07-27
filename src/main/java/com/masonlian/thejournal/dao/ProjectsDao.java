@@ -1,9 +1,10 @@
 package com.masonlian.thejournal.dao;
 
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
 import com.masonlian.thejournal.dto.request.NewReceived;
-import com.masonlian.thejournal.dto.request.QuotationRequest;
+import com.masonlian.thejournal.dto.request.CreateQuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
@@ -24,7 +25,7 @@ public interface ProjectsDao {
     void updateProfitById(Integer projectId,BigDecimal profit);
 
     //報價單資料操作
-    Integer createQuotation(Integer projectId, QuotationRequest quotationRequest);
+    Integer createQuotation(CustomUserDetails userDetails, CreateQuotationRequest createQuotationRequest);
     void updateTotalAmount(Integer quotationId, BigDecimal totalAmount);
 
     void createQuotationItem(List<QuotationItem> quotationItemList);

@@ -2,19 +2,18 @@ package com.masonlian.thejournal.service.serviceImpl;
 
 import com.masonlian.thejournal.dao.CostMgmtDao;
 import com.masonlian.thejournal.dto.QueryPara;
-import com.masonlian.thejournal.dto.request.ConstructionRequest;
-import com.masonlian.thejournal.dto.request.CreateMaterialEventRequest;
-import com.masonlian.thejournal.dto.request.MaterialItem;
-import com.masonlian.thejournal.dto.request.MaterialRequest;
+import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
 import com.masonlian.thejournal.service.CostMgmtService;
 import com.masonlian.thejournal.service.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import java.util.Arrays;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -31,9 +30,25 @@ public class CostMgmtServiceImpl implements CostMgmtService {
     private FinancialServiceImpl financialService;
 
     @Override
-    public Integer createMaterial(MaterialRequest materialRequest) {
+    public void createMaterial(CreateMaterialRequest createMaterialRequest) {
+        List<Material> materialList = new ArrayList<>();
 
-        return costMgmtDao.createMaterial(materialRequest);
+        for (MaterialRequest materialRequest: createMaterialRequest.getCreateMaterialRequests()) {
+            Material material = new Material();
+
+            material.setImageUrl(materialRequest.getImageUrl());
+            material.setUnitPrice(materialRequest.getUnitPrice());
+            material.setMaterialName(materialRequest.getMaterialName());
+            material.setSupplier(materialRequest.getSupplier());
+            material.setConstructionCategory(materialRequest.getConstructionCategory());
+            material.setSpecification(materialRequest.getSpecification());
+
+
+            materialList.add(material);
+
+        }
+
+        costMgmtDao.createMaterial(materialList);
 
     }
 
@@ -55,8 +70,32 @@ public class CostMgmtServiceImpl implements CostMgmtService {
     }
 
     @Override
-    public Integer createConstruction(ConstructionRequest constructionRequest){
-        return costMgmtDao.createConstruction(constructionRequest);
+    public List<Construction>  createConstruction(CreateConstructionRequest createConstructionRequest) {
+
+        List<Construction> constructionList = new ArrayList<>();
+
+        for( ConstructionRequest constructionRequest: createConstructionRequest.getCreateConstructionRequests()){
+
+            Construction construction = new Construction();
+
+            construction.setConstructionEstimate(constructionRequest.getConstructionEstimate());
+            construction.setConstructionItem(constructionRequest.getConstructionItem());
+            construction.setConstructionSpec(constructionRequest.getConstructionSpec());
+            construction.setConstructionCategory(constructionRequest.getConstructionCategory());
+
+            constructionList.add(construction);
+
+        }
+
+
+         int [] result = costMgmtDao.createConstruction(constructionList);
+        if( Arrays.stream(result).allMatch(i -> i>0 )){
+            return  constructionList;
+        }  else  {
+            return  null;
+        }
+
+
     }
 
     @Override

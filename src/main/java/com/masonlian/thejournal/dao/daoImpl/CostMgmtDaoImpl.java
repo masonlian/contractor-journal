@@ -3,12 +3,15 @@ package com.masonlian.thejournal.dao.daoImpl;
 import com.masonlian.thejournal.dao.CostMgmtDao;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.ConstructionRequest;
+import com.masonlian.thejournal.dto.request.CreateConstructionRequest;
+import com.masonlian.thejournal.dto.request.CreateMaterialRequest;
 import com.masonlian.thejournal.dto.request.MaterialRequest;
 import com.masonlian.thejournal.model.*;
 import com.masonlian.thejournal.rowmapper.AccountPayableRowMapper;
 import com.masonlian.thejournal.rowmapper.ConstructionRowMapper;
 import com.masonlian.thejournal.rowmapper.MaterialEventRowMapper;
 import com.masonlian.thejournal.rowmapper.MaterialMgmtRowMapper;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -30,23 +33,27 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public Integer createMaterial(MaterialRequest materialRequest){
+    public void createMaterial(List<Material> materialList){
 
-        String sql = " INSERT INTO material ( material_type, unit_price, image_url, specification, material_name )" +
-                " VALUE ( :material_type, :unit_price, :image_url, :specification, :material_name ) ";
 
-        Map<String, Object> map = new HashMap<>();
+        String sql = " INSERT INTO material (construction_category, unit_price, image_url, specification, material_name ,supplier )" +
+                " VALUE ( :construction_category, :unit_price, :image_url, :specification, :material_name, :supplier ) ";
 
-        map.put("material_type", materialRequest.getMaterialType());
-        map.put("unit_price", materialRequest.getUnitPrice());
-        map.put("image_url", materialRequest.getImageUrl());
-        map.put("specification", materialRequest.getSpecification());
-        map.put("material_name", materialRequest.getMaterialName());
+        MapSqlParameterSource [] mapSqlParameterSources = new MapSqlParameterSource[materialList.size()];
+        for( int i = 0; i < materialList.size()  ; i++ ){
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map),  keyHolder);
-        Integer materialId = keyHolder.getKey().intValue();
-        return materialId;
+            mapSqlParameterSources[i] = new MapSqlParameterSource();
+            mapSqlParameterSources[i].addValue("construction_category", materialList.get(i).getConstructionCategory());
+            mapSqlParameterSources[i].addValue("unit_price", materialList.get(i).getUnitPrice());
+            mapSqlParameterSources[i].addValue("image_url", materialList.get(i).getImageUrl());
+            mapSqlParameterSources[i].addValue("specification", materialList.get(i).getSpecification());
+            mapSqlParameterSources[i].addValue("material_name", materialList.get(i).getMaterialName());
+            mapSqlParameterSources[i].addValue("supplier", materialList.get(i).getSupplier());
+
+        }
+
+        namedParameterJdbcTemplate.batchUpdate(sql, mapSqlParameterSources);
+
     }
 
     @Override
@@ -78,7 +85,7 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
         String sql= "UPDATE  material SET   material_type = :material_type, unit_price = :unit_price, image_url = :image_url, specification :=specification , material_name= material_name WHERE  material_id = :material_id ";
         Map<String, Object> map = new HashMap<>();
         map.put("material_id", materialId);
-        map.put("material_type", materialRequest.getMaterialType());
+        map.put("material_type", materialRequest.getConstructionCategory());
         map.put("unit_price", materialRequest.getUnitPrice());
         map.put("image_url", materialRequest.getImageUrl());
         map.put("specification", materialRequest.getSpecification());
@@ -98,19 +105,27 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
         else return null;
     }
     @Override
-    public Integer createConstruction(ConstructionRequest constructionRequest){
-        String sql =  "INSERT construction ( construction_item, construction_spec, construction_estimate, media_repository_category ) VALUES ( :construction_item, :construction_spec, :construction_estimate, :media_repository_category) WHERE construction_id = :construction_id  ";
+    public int [] createConstruction(List<Construction> constructionList){
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("construction_item", constructionRequest.getConstructionItem());
-        map.put("construction_spec", constructionRequest.getConstructionSpec());
-        map.put("construction_estimate", constructionRequest.getConstructionEstimate());
-        map.put("media_repository_category", constructionRequest.getMediaRepositoryCategory());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql =  "INSERT construction ( construction_item, construction_spec, construction_estimate, construction_category ) VALUES ( :construction_item, :construction_spec, :construction_estimate, :construction_category )";
 
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map),  keyHolder);
-        Integer constructionId = keyHolder.getKey().intValue();
-        return constructionId;
+        MapSqlParameterSource [] mapSqlParameterSource = new MapSqlParameterSource[constructionList.size()];
+
+        for(int i = 0 ; i < constructionList.size() ; i++){
+
+            mapSqlParameterSource[i] = new MapSqlParameterSource();
+
+            mapSqlParameterSource[i].addValue("construction_item", constructionList.get(i).getConstructionItem());
+            mapSqlParameterSource[i].addValue("construction_spec", constructionList.get(i).getConstructionSpec());
+            mapSqlParameterSource[i].addValue("construction_estimate", constructionList.get(i).getConstructionEstimate());
+            mapSqlParameterSource[i].addValue("construction_category", constructionList.get(i).getConstructionCategory());
+
+        }
+
+      int [] result =namedParameterJdbcTemplate.batchUpdate(sql, mapSqlParameterSource);
+        if(result.length > 0){
+            return result;
+        }else return null;
 
 
     }
@@ -149,7 +164,7 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
         map.put("construction_item", constructionRequest.getConstructionItem());
         map.put("construction_spec", constructionRequest.getConstructionSpec());
         map.put("construction_estimate", constructionRequest.getConstructionEstimate());
-        map.put("media_repository_category", constructionRequest.getMediaRepositoryCategory());
+
         namedParameterJdbcTemplate.update(sql, map);
 
     }
@@ -243,6 +258,7 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
           mapSqlParameterSources[i].addValue("unit", materialUsedList.get(i).getUnit());
           mapSqlParameterSources[i].addValue("amount", materialUsedList.get(i).getAmount());
           mapSqlParameterSources[i].addValue("material_event_id", materialEventId);
+
 
       }
       namedParameterJdbcTemplate.batchUpdate(sql, mapSqlParameterSources);

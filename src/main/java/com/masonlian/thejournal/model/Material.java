@@ -7,31 +7,13 @@ public class Material{
 
 
     private Integer materialId;
-    private String materialType;
+    private String constructionCategory;
     private String materialName;
     private String specification;
     private String imageUrl;
     private BigDecimal unitPrice;
-
-    public String getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(String supplier) {
-        this.supplier = supplier;
-    }
-
     private String supplier;
 
-
-
-    public String getMaterialType() {
-        return materialType;
-    }
-
-    public void setMaterialType(String materialType) {
-        this.materialType = materialType;
-    }
 
     public Integer getMaterialId() {
         return materialId;
@@ -39,6 +21,14 @@ public class Material{
 
     public void setMaterialId(Integer materialId) {
         this.materialId = materialId;
+    }
+
+    public String getConstructionCategory() {
+        return constructionCategory;
+    }
+
+    public void setConstructionCategory(String constructionCategory) {
+        this.constructionCategory = constructionCategory;
     }
 
     public String getMaterialName() {
@@ -73,5 +63,11 @@ public class Material{
         this.unitPrice = unitPrice;
     }
 
+    public String getSupplier() {
+        return supplier;
+    }
 
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
 }

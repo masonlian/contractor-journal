@@ -5,7 +5,7 @@ import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
 import com.masonlian.thejournal.dto.request.NewReceived;
 import com.masonlian.thejournal.dto.request.QuotationItemRequest;
-import com.masonlian.thejournal.dto.request.QuotationRequest;
+import com.masonlian.thejournal.dto.request.CreateQuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
@@ -19,11 +19,11 @@ public interface ProjectsService {
     Project getProjectById(Integer projectId);
     void deleteProjectById(Integer projectId);
     void updateProjectById(Integer projectId,ProjectRequest projectRequest);
-    List<Project> getProjects(QueryPara queryPara, CustomUserDetails customUserDetails);
+    List<Project> getProjects(QueryPara queryPara);
 
     BigDecimal updateBalanceByDailyExpense(String projectName ,BigDecimal newDailyExpense );
 
-    Integer createQuotation(Integer projectId, QuotationRequest quotationRequest);
+    Integer createQuotation(CustomUserDetails userDetails  , CreateQuotationRequest createQuotationRequest);
     Quotation getQuotationById(Integer quotationId);
     void createQuotationItem (Integer projectId, QuotationItemRequest quotationItemRequest);
     List<QuotationWithItemDto> getQuotations (Integer projectId);

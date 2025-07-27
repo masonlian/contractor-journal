@@ -51,6 +51,7 @@ public class UserController {
 
      Map<String,Object> clams = new HashMap<>();
 
+     clams.put("userId",user.getUserId());
      clams.put("sub",user.getName());
      clams.put("email",user.getEmail());
      clams.put("level",user.getLevel());

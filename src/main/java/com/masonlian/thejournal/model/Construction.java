@@ -37,17 +37,19 @@ public class Construction {
         this.constructionEstimate = constructionEstimate;
     }
 
-    public String getMediaRepositoryCategory() {
-        return mediaRepositoryCategory;
-    }
-
-    public void setMediaRepositoryCategory(String mediaRepositoryCategory) {
-        this.mediaRepositoryCategory = mediaRepositoryCategory;
-    }
 
     private String constructionItem;
     private String constructionSpec;
     private BigDecimal constructionEstimate;
-    private String mediaRepositoryCategory;
+
+    public String getConstructionCategory() {
+        return constructionCategory;
+    }
+
+    public void setConstructionCategory(String constructionCategory) {
+        this.constructionCategory = constructionCategory;
+    }
+
+    private String  constructionCategory;
 
 }

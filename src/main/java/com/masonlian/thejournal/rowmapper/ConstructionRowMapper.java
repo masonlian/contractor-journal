@@ -14,8 +14,9 @@ public class ConstructionRowMapper implements RowMapper<Construction> {
         construction.setConstructionItem(rs.getString("construction_item"));
         construction.setConstructionId(rs.getInt("construction_id"));
         construction.setConstructionSpec(rs.getString("construction_spec"));
-        construction.setMediaRepositoryCategory(rs.getString("media_repository_category"));
+        construction.setConstructionCategory(rs.getString("construction_category"));
         construction.setConstructionEstimate(rs.getBigDecimal("construction_estimate"));
+
         return construction;
 
     }

@@ -42,15 +42,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
             try{  Claims claims = jwtTokenUtil.extractAllClaims(token);//
-                  String username = claims.getSubject();
+                  String userName = claims.getSubject();
                   String level = claims.get("level", String.class);
+                  String email = claims.get("email", String.class);
+                  Integer userId = Integer.parseInt(claims.get("userId", String.class));
 
+                  CustomUserDetails customUserDetails =  new CustomUserDetails(userName ,userId,email,level);
 
 
             List<GrantedAuthority> authorities =
                     List.of(new SimpleGrantedAuthority(level));
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customUserDetails , null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);}
             catch(ExpiredJwtException e){
                 System.out.println("Token過期"+e.getMessage());

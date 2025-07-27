@@ -1,22 +1,20 @@
 package com.masonlian.thejournal.service;
 
 import com.masonlian.thejournal.dto.QueryPara;
-import com.masonlian.thejournal.dto.request.ConstructionRequest;
-import com.masonlian.thejournal.dto.request.CreateMaterialEventRequest;
-import com.masonlian.thejournal.dto.request.MaterialRequest;
+import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
 
 import java.util.List;
 
 public interface CostMgmtService {
 
-    Integer createMaterial(MaterialRequest materialRequest );
+    void createMaterial(CreateMaterialRequest createMaterialRequest );
     Material getMaterialById(Integer materialId);
     void updateMaterialById(Integer materialId, MaterialRequest materialRequest);
     void deleteMaterialById(Integer materialId);
     List<Material> getMaterials(QueryPara queryPara);
 
-    Integer createConstruction(ConstructionRequest constructionRequest);
+    List<Construction> createConstruction(CreateConstructionRequest createConstructionRequest);
     Construction getConstructionById(Integer constructionId);
     void deleteConstructionById(Integer constructionId);
     void updateConstructionBydId (Integer constructionId,ConstructionRequest constructionRequest);

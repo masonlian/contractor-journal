@@ -1,9 +1,26 @@
 package com.masonlian.thejournal.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 public class ConstructionRequest {
+
+    @NotNull
     private String constructionItem;
+    private String constructionSpec;
+    private BigDecimal constructionEstimate;
+    private String  constructionCategory;
+
+    public String getConstructionCategory() {
+        return constructionCategory;
+    }
+
+    public void setConstructionCategory(String constructionCategory) {
+        this.constructionCategory = constructionCategory;
+    }
+
+
 
     public String getConstructionSpec() {
         return constructionSpec;
@@ -29,15 +46,5 @@ public class ConstructionRequest {
         this.constructionEstimate = constructionEstimate;
     }
 
-    public String getMediaRepositoryCategory() {
-        return mediaRepositoryCategory;
-    }
 
-    public void setMediaRepositoryCategory(String mediaRepositoryCategory) {
-        this.mediaRepositoryCategory = mediaRepositoryCategory;
-    }
-
-    private String constructionSpec;
-    private BigDecimal constructionEstimate;
-    private String mediaRepositoryCategory;
 }

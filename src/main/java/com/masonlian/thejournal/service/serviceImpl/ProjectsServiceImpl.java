@@ -1,9 +1,8 @@
 package com.masonlian.thejournal.service.serviceImpl;
 
-import com.masonlian.thejournal.constant.Level;
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dao.CostMgmtDao;
 import com.masonlian.thejournal.dao.ProjectsDao;
-import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
 import com.masonlian.thejournal.dto.request.*;
@@ -55,18 +54,11 @@ public class ProjectsServiceImpl implements ProjectsService {
 
 
     @Override
-    public List<Project> getProjects(QueryPara queryPara, CustomUserDetails customUserDetails) {
+    public List<Project> getProjects(QueryPara queryPara) {
 
         List<Project> projectList = projectsDao.getProjects(queryPara);
-        if(customUserDetails.getLevel() == Level.L3){
-            for(Project project : projectList){
-                project.setCostEstimate(null);
-                project.setProfit(null);
-                project.setBudget(null);
-            }
-        }
-        return projectList;
 
+        return projectList;
     }
 
     @Override
@@ -79,9 +71,9 @@ public class ProjectsServiceImpl implements ProjectsService {
     }
 
     @Override
-    public Integer createQuotation(Integer projectId, QuotationRequest quotationRequest){
+    public Integer createQuotation(CustomUserDetails userDetails , CreateQuotationRequest createQuotationRequest){
 
-        return projectsDao.createQuotation(projectId, quotationRequest);
+        return projectsDao.createQuotation(userDetails , createQuotationRequest);
 
     }
 

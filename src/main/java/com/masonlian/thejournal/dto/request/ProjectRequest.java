@@ -1,9 +1,14 @@
 package com.masonlian.thejournal.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
+
 public class ProjectRequest {
 
+    @NotNull
     private String projectName;
     private String description;
+    @NotNull
     private String owner;
     private String address;
     private String projectManager;

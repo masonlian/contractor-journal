@@ -1,24 +1,36 @@
 package com.masonlian.thejournal.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 public class MaterialRequest {
 
 
 
-    private String materialType;
+    private String constructionCategory;
+    @NotNull
     private String materialName;
     private String specification;
     private String imageUrl;
     private BigDecimal unitPrice;//規格
+    private String supplier;
 
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public String getConstructionCategory() {
+        return constructionCategory;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
+    public void setConstructionCategory(String constructionCategory) {
+        this.constructionCategory = constructionCategory;
+    }
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
     }
 
     public String getSpecification() {
@@ -37,21 +49,19 @@ public class MaterialRequest {
         this.imageUrl = imageUrl;
     }
 
-    public String getMaterialName() {
-        return materialName;
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setMaterialName(String materialName) {
-        this.materialName = materialName;
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
-    public String getMaterialType() {
-        return materialType;
+    public String getSupplier() {
+        return supplier;
     }
 
-    public void setMaterialType(String materialType) {
-        this.materialType = materialType;
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
     }
-
-
 }

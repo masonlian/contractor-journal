@@ -1,10 +1,11 @@
 package com.masonlian.thejournal.dao.daoImpl;
 
+import com.masonlian.thejournal.config.CustomUserDetails;
 import com.masonlian.thejournal.dao.ProjectsDao;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.QuotationWithItemDto;
 import com.masonlian.thejournal.dto.request.NewReceived;
-import com.masonlian.thejournal.dto.request.QuotationRequest;
+import com.masonlian.thejournal.dto.request.CreateQuotationRequest;
 import com.masonlian.thejournal.model.Project;
 import com.masonlian.thejournal.dto.request.ProjectRequest;
 import com.masonlian.thejournal.model.Quotation;
@@ -19,6 +20,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -98,13 +100,14 @@ public class ProjectsDaoImpl implements ProjectsDao {
     @Override
     public List<Project> getProjects(QueryPara queryPara){
 
-         String sql = " SELECT  project_id, owner, project_name, address ,project_manager ,description, budget , profit, cost_estimate, created_date, last_modified_date, construction_period, balance "
+         String sql = " SELECT  project_id, owner, project_name, address ,project_manager ,description, budget , profit, cost_estimate, created_date, last_modified_date, construction_period, balance, finished "
                  + " FROM projects WHERE 1=1 ";
 
          Map<String ,Object> map = new HashMap();//接著思考根據什麼傳入搜尋條件。
 
-         sql = sql+ " AND address LIKE :search";
-         map.put("search","%" + queryPara.getSearch()+ "%");
+        if(queryPara.getSearch() != null){
+         sql = sql+ " AND owner LIKE :search";
+         map.put("search" , "%" + queryPara.getSearch()+ "%");}
 
          sql = sql + " ORDER BY "+ queryPara.getOrderBy()+ " " + queryPara.getSort();
          sql = sql + " LIMIT :limit OFFSET :offset";
@@ -142,16 +145,16 @@ public class ProjectsDaoImpl implements ProjectsDao {
     }
 
     @Override
-    public Integer createQuotation(Integer projectId, QuotationRequest quotationRequest){
+    public Integer createQuotation(CustomUserDetails userDetails , CreateQuotationRequest createQuotationRequest){
 
-         String sql = "INSERT quotation (project_id, created_date, create_by, status, summary ) VALUES ( :project_id, :created_date, :create_by, :status, :summary ) WHERE quotation_id = :quotation_id  ";
+         String sql = "INSERT quotation (project_id, created_date, create_by, status, summary ) VALUES ( :project_id, :created_date, :create_by, :status, :summary ) WHERE  quotation_id = :quotation_id  ";
          Map<String, Object> map = new HashMap();
-         map.put("project_id", projectId);
-         map.put("create_by", quotationRequest.getCreateBy());
-         map.put("status", quotationRequest.getStatus());
-         map.put("summary", quotationRequest.getSummary());
-         Date date = quotationRequest.getCreateDate();
-         map.put("created_date", date);
+         map.put("project_id", createQuotationRequest.getProjectId());
+         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+         map.put("created_date", timestamp);
+         map.put("create_by", userDetails.getUsername());
+         map.put("status", createQuotationRequest.getStatus());
+         map.put("summary", createQuotationRequest.getSummary());
 
          KeyHolder keyHolder = new GeneratedKeyHolder();
          namedParameterJdbcTemplate.update(sql,new MapSqlParameterSource(map), keyHolder );

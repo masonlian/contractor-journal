@@ -13,10 +13,11 @@ public class MaterialMgmtRowMapper implements RowMapper {
         Material material = new Material() ;
         material.setMaterialId(rs.getInt("material_id"));
         material.setMaterialName(rs.getString("material_name"));
-        material.setMaterialType(rs.getString("material_type"));
-        material.setImageUrl(rs.getString("image_url"));
-        material.setUnitPrice(rs.getBigDecimal("unit_price"));
+        material.setSupplier(rs.getString("supplier"));
         material.setSpecification(rs.getString("specification"));
+        material.setImageUrl(rs.getString("image_url"));
+        material.setConstructionCategory(rs.getString("construction_category"));
+        material.setUnitPrice(rs.getBigDecimal("unit_price"));
 
         return material;
     }

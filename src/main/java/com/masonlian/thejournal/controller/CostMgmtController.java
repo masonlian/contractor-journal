@@ -3,12 +3,11 @@ package com.masonlian.thejournal.controller;
 
 import com.masonlian.thejournal.constant.ConstructionCategory;
 import com.masonlian.thejournal.dto.QueryPara;
-import com.masonlian.thejournal.dto.request.ConstructionRequest;
-import com.masonlian.thejournal.dto.request.CreateMaterialEventRequest;
-import com.masonlian.thejournal.dto.request.MaterialRequest;
+import com.masonlian.thejournal.dto.request.*;
 import com.masonlian.thejournal.model.*;
 import com.masonlian.thejournal.service.CostMgmtService;
 import com.masonlian.thejournal.util.Page;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +29,13 @@ public class CostMgmtController {
 
     @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
     @PostMapping("/cost/material")
-    public ResponseEntity<Material>  createMaterial(@RequestBody MaterialRequest materialRequest ){
+    public ResponseEntity<String>  createMaterial(@Valid @RequestBody
+                                             CreateMaterialRequest createMaterialRequest){
 
 
-        Integer materialId = costMgmtService.createMaterial(materialRequest);
-        Material material = costMgmtService.getMaterialById(materialId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(material);
+        costMgmtService.createMaterial(createMaterialRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("建材資料創建成功！");
     }
 
     @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
@@ -59,16 +59,17 @@ public class CostMgmtController {
 
     @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
     @PostMapping("/cost/construction")
-    public ResponseEntity<Construction>  createConstruction(@RequestBody ConstructionRequest constructionRequest ){
+    public ResponseEntity<List<Construction>>  createConstruction(@Valid @RequestBody CreateConstructionRequest createConstructionRequest ){
 
-        Integer constructionId =  costMgmtService.createConstruction(constructionRequest);
-        Construction construction = costMgmtService.getConstructionById(constructionId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(construction);
+        List<Construction>  constructionList =  costMgmtService.createConstruction( createConstructionRequest) ;
+
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(constructionList);
 
 
     }
 
-    @PreAuthorize("hasAnyAuthority('L0','L1','L2','L3')")
+    //@PreAuthorize("hasAnyAuthority('L0','L1','L2','L3')")
    @GetMapping ("/cost/material")
    public ResponseEntity<Page<Material>> getMaterial (@RequestParam  (defaultValue = "0")@Max(5) @Min(0) Integer offset,
                                                       @RequestParam (name = "limit", defaultValue="100") @Max(100) Integer limit,

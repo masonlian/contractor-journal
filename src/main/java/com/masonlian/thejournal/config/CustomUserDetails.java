@@ -17,12 +17,23 @@ public class CustomUserDetails implements UserDetails {
     private String email;
     private Integer userId;
     private Level level;
+    private String username;
+
+
+    public CustomUserDetails(String email, Integer userId, String level, String username) {
+        this.email = email;
+        this.userId = userId;
+        this.username = username;
+        this.level = Level.valueOf(level);
+    }
+
 
 
     public CustomUserDetails(User user) {
         this.email = user.getEmail();
         this.userId = user.getUserId();
         this.level = user.getLevel();
+        this.username = user.getName();
     }
 
     @Override
