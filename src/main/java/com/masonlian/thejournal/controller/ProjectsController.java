@@ -125,6 +125,7 @@ public class ProjectsController {
     public ResponseEntity<Quotation> createQuotation(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody CreateQuotationRequest createQuotationRequest ) {
 
         Integer quotationId = projectsService.createQuotation(userDetails, createQuotationRequest);
+        System.out.println("報價單Id為:"+quotationId);
         Quotation quotation = projectsService.getQuotationById(quotationId);
         return ResponseEntity.status(HttpStatus.CREATED).body(quotation);
 
@@ -132,7 +133,7 @@ public class ProjectsController {
 
     }
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/projects/{quotationId}/item")
     public ResponseEntity<?> createQuotationItem(@PathVariable Integer quotationId, @RequestBody QuotationItemRequest quotationItemRequest) {
 
@@ -145,7 +146,7 @@ public class ProjectsController {
 
 
     @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @GetMapping("/projects/{projectId}/quotation/")
+    @GetMapping("/projects/{projectId}/quotation")
     public ResponseEntity<List<QuotationWithItemDto>> getQuotations(@PathVariable Integer projectId) {
 
         List<QuotationWithItemDto> quotationList  = projectsService.getQuotations(projectId);
@@ -155,9 +156,9 @@ public class ProjectsController {
 
     }
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @PostMapping("/projects/received ")
-    public ResponseEntity<Received> createReceived(@RequestBody NewReceived newReceived) {
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PostMapping("/projects/received")
+    public ResponseEntity<Received> createReceived(@Valid @RequestBody NewReceived newReceived) {
 
         Integer createReceived = projectsService.createReceived(newReceived);
         Received received  = projectsService.getReceivedById(createReceived);
@@ -165,8 +166,8 @@ public class ProjectsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(received);
     }
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @GetMapping("/projects/{projectId}/received ")
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
+    @GetMapping("/projects/{projectId}/received")
     public ResponseEntity<List<Received>> getReceived(@PathVariable Integer projectId) {
 
         List<Received> receivedList = projectsService.getReceivedByProjectId(projectId);

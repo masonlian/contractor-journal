@@ -71,7 +71,10 @@ public enum ConstructionCategory {
 
     FURNITURE( // Furniture items
             "Desk", "Wardrobe", "Bed frame", "Dining table", "Sofa", "Drawer hardware", "Drawer slides", "Acrylic panel", "Veneered board"
-    );
+    ),
+    CLEANUP
+    ;
+
 
 
     private final String[] materials;

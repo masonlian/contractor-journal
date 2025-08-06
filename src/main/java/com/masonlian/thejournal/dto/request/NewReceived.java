@@ -1,32 +1,16 @@
 package com.masonlian.thejournal.dto.request;
 
 import com.masonlian.thejournal.constant.ConstructionCategory;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
 public class NewReceived {
 
     public Integer projectId;
+    @NotNull
     public String name;
-
-    public BigDecimal getReceivedPayment() {
-        return receivedPayment;
-    }
-
-    public void setReceivedPayment(BigDecimal receivedPayment) {
-        this.receivedPayment = receivedPayment;
-    }
-
     public BigDecimal receivedPayment;
-    public ConstructionCategory constructionCategory;
-
-    public Integer getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
-    }
 
     public String getName() {
         return name;
@@ -36,12 +20,19 @@ public class NewReceived {
         this.name = name;
     }
 
-
-    public ConstructionCategory getConstructionCategory() {
-        return constructionCategory;
+    public BigDecimal getReceivedPayment() {
+        return receivedPayment;
     }
 
-    public void setConstructionCategory(ConstructionCategory constructionCategory) {
-        this.constructionCategory = constructionCategory;
+    public void setReceivedPayment(BigDecimal receivedPayment) {
+        this.receivedPayment = receivedPayment;
+    }
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
     }
 }

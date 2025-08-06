@@ -3,6 +3,7 @@ package com.masonlian.thejournal.dao;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.AttendanceRequest;
 import com.masonlian.thejournal.dto.request.CalendarEventRequest;
+import com.masonlian.thejournal.dto.request.FinishProjectRequest;
 import com.masonlian.thejournal.model.*;
 
 import java.math.BigDecimal;
@@ -28,7 +29,7 @@ public interface CalendarDao {
     List<MaterialEvent> getMaterialUsedById(Integer eventId);
 
 
-    Integer finishProject(Integer eventId, CalendarEventRequest calendarEventRequest);
+    Integer finishProject(Integer eventId, FinishProjectRequest finishProjectRequest);
     void laborAttend(Integer eventId ,Integer employeeId,AttendanceRequest attendanceRequest );
 
 

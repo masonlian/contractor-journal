@@ -22,8 +22,9 @@ public interface CostMgmtService {
 
     Integer createMaterialEvent(CreateMaterialEventRequest createMaterialEventRequest);
     MaterialEvent  getMaterialEventById(Integer materialEventId);
+    List<MaterialEvent> getMaterialEventByProject(Integer projectId);
 
-    void  createAccountPayable(MaterialUsed materialUsed);
+    void  createAccountPayable(Integer materialEventId , List<MaterialUsed> materialUsed);
 
 
     void  payToSupplier(Integer payableId, Boolean alreadyPaid);

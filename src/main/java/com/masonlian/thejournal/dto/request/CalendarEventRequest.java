@@ -1,17 +1,38 @@
 package com.masonlian.thejournal.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.masonlian.thejournal.constant.ConstructionCategory;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.math.BigDecimal;
-import java.security.Timestamp;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 
+@Data
 public class CalendarEventRequest {
 
+
     private String projectName;
-    private Boolean  finished;
     private ConstructionCategory constructionCategory;
-    private BigDecimal dailyExpenses;
+    private BigDecimal dailyExpenses = BigDecimal.ZERO;
     private String notation;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate eventDate;
+    private BigDecimal incidentalExpenses;
+    private Boolean finished = Boolean.FALSE;
+
+
+    public Boolean getFinished() {
+        return finished;
+    }
+
+    public void setFinished(Boolean finished) {
+        this.finished = finished;
+    }
+
+
 
     public BigDecimal getIncidentalExpenses() {
         return incidentalExpenses;
@@ -20,8 +41,6 @@ public class CalendarEventRequest {
     public void setIncidentalExpenses(BigDecimal incidentalExpenses) {
         this.incidentalExpenses = incidentalExpenses;
     }
-
-    private BigDecimal incidentalExpenses;
 
     public Integer getEventId() {
         return eventId;
@@ -33,15 +52,15 @@ public class CalendarEventRequest {
 
     private Integer eventId;
 
-    public Timestamp getEventDate() {
+    public LocalDate getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Timestamp eventDate) {
+    public void setEventDate(LocalDate eventDate) {
         this.eventDate = eventDate;
     }
 
-    private Timestamp eventDate;
+
 
 
     public ConstructionCategory getConstructionCategory() {
@@ -66,14 +85,6 @@ public class CalendarEventRequest {
 
     public void setNotation(String notation) {
         this.notation = notation;
-    }
-
-    public Boolean getFinished() {
-        return finished;
-    }
-
-    public void setFinished(Boolean finished) {
-        this.finished = finished;
     }
 
 

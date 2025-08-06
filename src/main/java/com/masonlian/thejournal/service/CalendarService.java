@@ -17,15 +17,15 @@ public interface CalendarService {
    List<CalendarEvent> getCalendarEventsByDate(QueryPara calendarQueryPara);
 
 
-   void createLaborEvent(Integer eventId, CreateLaborEventRequest createLaborEventRequest);
+   List<LaborRole> createLaborEvent(Integer eventId, CreateLaborEventRequest createLaborEventRequest);
    List<LaborRole> getAttendancesList(Integer eventId);
    void updateLaborEvent(Integer eventId, LaborEvent laborEvent);
    void deleteLaborEvent(Integer eventId);
 
 
    void attendanceCheck(Integer eventId, CustomUserDetails user, AttendanceRequest attendanceRequest);
-   BigDecimal updateDailyExpenses(Integer eventId,BigDecimal newExpenses);
-   Integer finishProject(Integer eventId, CalendarEventRequest calendarEventRequest);
+   void updateDailyExpenses(Integer eventId,BigDecimal newExpenses);
+   Integer finishProject(Integer eventId, FinishProjectRequest finishProjectRequest);
 
 
 

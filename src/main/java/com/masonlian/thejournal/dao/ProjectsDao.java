@@ -34,7 +34,8 @@ public interface ProjectsDao {
 
     void updatePeriod(Integer projectId  , Integer period);
     void updateCostEstimate(Integer projectId, BigDecimal newEstimate);
-    List<QuotationWithItemDto> getQuotations (Integer projectId);
+    List<Quotation> getQuotations (Integer projectId);
+    List<QuotationItem> getQuotationItemById(Integer quotationId);
     void finishProject(Integer projectId,Boolean finish);
 
     Integer createReceived(NewReceived newReceived);

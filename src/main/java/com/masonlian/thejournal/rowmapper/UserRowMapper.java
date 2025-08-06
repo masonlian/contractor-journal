@@ -22,6 +22,7 @@ public class UserRowMapper implements RowMapper<User> {
         user.setCreatedTime(rs.getTimestamp("created_time"));
         user.setLastModifiedTime(rs.getTimestamp("last_modified_time"));
         user.setLastLoginTime(rs.getTimestamp("last_login_time"));
+        user.setName(rs.getString("name"));
 
         return user;
 

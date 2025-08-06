@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
@@ -33,13 +35,13 @@ public class CalenderController {
 
 
     //日曆功能
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/calendar/event")
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventRequest calendarEventRequest) {
 
         Integer eventId = calendarService.createCalendarEvent(calendarEventRequest);
-
         calendarService.updateDailyExpenses(eventId,calendarEventRequest.getIncidentalExpenses());
+
 
         CalendarEvent calendarEvent = calendarService.getCalendarEventById(eventId);
         return ResponseEntity.status(HttpStatus.CREATED).body(calendarEvent);
@@ -62,15 +64,19 @@ public class CalenderController {
 
     }
 
-    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
-    @GetMapping("/calendar")
-    public ResponseEntity<Page<Calendar>> getEventsByCalendarDate(@RequestParam (name="limit", defaultValue = "10")@Max(100)Integer limit,
+    //假設前端使用ISO8601字串格式傳入時間資訊 =>轉換成LacalDate去把範圍內的資料call出來
+    //平行取得資料
+    //@PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    @GetMapping("/calendar/{localDate}")
+    public ResponseEntity<Page<Calendar>> getEventsByCalendarDate(@RequestParam (name="limit", defaultValue = "10")@Max(100) @Min(0) Integer limit,
                                                                   @RequestParam (defaultValue = "0") @Min(0) Integer offset,
-                                                                  @PathVariable Timestamp calendarDate) {
+                                                                  @PathVariable @DateTimeFormat(iso= DateTimeFormat.ISO.DATE) LocalDate localDate) {
         QueryPara calendarQueryPara = new QueryPara();
+
         calendarQueryPara.setLimit(limit);
         calendarQueryPara.setOffset(offset);
-        calendarQueryPara.setCalendarDate(calendarDate);
+        calendarQueryPara.setCalendarDate(localDate);
+
         List<CalendarEvent> calendarList =calendarService.getCalendarEventsByDate(calendarQueryPara);
 
         Page calendarPage = new Page();
@@ -78,20 +84,20 @@ public class CalenderController {
         calendarPage.setTotal(calendarList.size());
         calendarPage.setLimit(limit);
         calendarPage.setOffset(offset);
-        calendarPage.setTotal(calendarList.size());
+        calendarPage.setResult(calendarList);
 
         return ResponseEntity.status(HttpStatus.OK).body(calendarPage);
     }
 
 
     //分段提交
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/calendar/event/{eventId}/labor")
-    public ResponseEntity <?> createLaborEvent(@PathVariable Integer eventId, @RequestBody CreateLaborEventRequest createLaborEventRequest) {
+    public ResponseEntity <List<LaborRole>> createLaborEvent(@PathVariable Integer  eventId,  @RequestBody CreateLaborEventRequest createLaborEventRequest) {
 
-        calendarService.createLaborEvent(eventId,createLaborEventRequest); //回傳人力事件的列表id
+       List<LaborRole>  attendanceList =  calendarService.createLaborEvent(eventId, createLaborEventRequest); //回傳人力事件的列表id
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(attendanceList);
 
 
     }
@@ -133,21 +139,23 @@ public class CalenderController {
     @PutMapping("/calendar/{eventId}/attendance")
     public ResponseEntity<Boolean> AttendanceCheck(@PathVariable Integer eventId, @AuthenticationPrincipal CustomUserDetails user, @RequestBody AttendanceRequest attendanceRequest) {
 
+        System.out.println("使用者為:" + user.getUsername()+ "，使用者ID為: "+ user.getUserId()  );
+
         calendarService.attendanceCheck(eventId,user,attendanceRequest);
 
         return ResponseEntity.status(HttpStatus.OK).build();
-
-
 
     }
 
 
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @PutMapping("/calendar/event/{eventId} ")
-    public ResponseEntity<Project> finishProject(@PathVariable Integer eventId ,@Valid CalendarEventRequest calendarEventRequest) {
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PutMapping("/calendar/finish/{eventId}")
+    public ResponseEntity<Project> finishProject(@PathVariable Integer eventId , @RequestBody  FinishProjectRequest finishProjectRequest) {
 
-        Integer projectId = calendarService.finishProject(eventId,calendarEventRequest);
+        System.out.println("前端傳來的參數為:"+finishProjectRequest.getFinish());
+
+        Integer projectId = calendarService.finishProject(eventId,finishProjectRequest);
         Project project = projectsService.getProjectById(projectId);
         return ResponseEntity.status(HttpStatus.OK).body(project);
 

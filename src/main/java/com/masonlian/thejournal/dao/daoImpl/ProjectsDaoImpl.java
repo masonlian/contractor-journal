@@ -147,14 +147,14 @@ public class ProjectsDaoImpl implements ProjectsDao {
     @Override
     public Integer createQuotation(CustomUserDetails userDetails , CreateQuotationRequest createQuotationRequest){
 
-         String sql = "INSERT quotation (project_id, created_date, create_by, status, summary ) VALUES ( :project_id, :created_date, :create_by, :status, :summary ) WHERE  quotation_id = :quotation_id  ";
+         String sql = "INSERT quotation (project_id, created_date, create_by, status, summary ) VALUES ( :project_id, :created_date, :create_by, :status, :summary )";
          Map<String, Object> map = new HashMap();
-         map.put("project_id", createQuotationRequest.getProjectId());
          Timestamp timestamp = new Timestamp(System.currentTimeMillis());
          map.put("created_date", timestamp);
          map.put("create_by", userDetails.getUsername());
          map.put("status", createQuotationRequest.getStatus());
          map.put("summary", createQuotationRequest.getSummary());
+         map.put("project_id", createQuotationRequest.getProjectId());
 
          KeyHolder keyHolder = new GeneratedKeyHolder();
          namedParameterJdbcTemplate.update(sql,new MapSqlParameterSource(map), keyHolder );
@@ -165,7 +165,7 @@ public class ProjectsDaoImpl implements ProjectsDao {
     @Override
     public Quotation getQuotationById(Integer quotationId){
 
-         String sql = "SELECT * FROM quotations WHERE quotation_id = :quotation_id   ";
+         String sql = "SELECT * FROM quotation WHERE quotation_id = :quotation_id";
          Map<String, Object> map = new HashMap();
          map.put("quotation_id", quotationId);
          List<Quotation> quotationList =namedParameterJdbcTemplate.query(sql,map,new QuotationRowMapper());
@@ -179,22 +179,17 @@ public class ProjectsDaoImpl implements ProjectsDao {
     @Override
     public void createQuotationItem(List<QuotationItem>  quotationItemList){
 
-        String sql =  "INSERT quotation_item  ( quotation_id, material_name, material_unit, material_spec, material_amount, construct_item, construct_unit, construct_spec,construct_amount ) VALUES ( :quotation_id, :material_name, :material_unit, :material_spec, :material_amount, :construct_item, :construct_unit, :construct_spec, :construct_amount)  ";
+        String sql =  "INSERT quotation_item  ( quotation_id, construct_item, construct_unit, construct_spec,construct_estimate) VALUES ( :quotation_id, :construct_item, :construct_unit, :construct_spec, :construct_estimate )  ";
         MapSqlParameterSource [] mapSqlParameterSource =  new MapSqlParameterSource[quotationItemList.size()];
         for(int i = 0; i< quotationItemList.size(); i++){
 
             mapSqlParameterSource[i]=new MapSqlParameterSource();
             mapSqlParameterSource[i].addValue("quotation_id", quotationItemList.get(i).getQuotationId());
 
-            mapSqlParameterSource[i].addValue("material_name", quotationItemList.get(i).getMaterialName());
-            mapSqlParameterSource[i].addValue("material_unit", quotationItemList.get(i).getMaterialUnit());
-            mapSqlParameterSource[i].addValue("material_spec", quotationItemList.get(i).getMaterialSpec());
-            mapSqlParameterSource[i].addValue("material_amount", quotationItemList.get(i).getMaterialAmount());
-
             mapSqlParameterSource[i].addValue("construct_item", quotationItemList.get(i).getConstructionItem());
             mapSqlParameterSource[i].addValue("construct_unit", quotationItemList.get(i).getConstructionUnit());
             mapSqlParameterSource[i].addValue("construct_spec", quotationItemList.get(i).getConstructionSpec());
-            mapSqlParameterSource[i].addValue("construct_amount", quotationItemList.get(i).getConstructionAmount());
+            mapSqlParameterSource[i].addValue("construct_estimate", quotationItemList.get(i).getConstruction_estimate());
 
         }
 
@@ -214,21 +209,31 @@ public class ProjectsDaoImpl implements ProjectsDao {
     }
 
     @Override
-    public List<QuotationWithItemDto> getQuotations (Integer projectId){
+    public List<Quotation> getQuotations (Integer projectId) {
 
-         String sql = "SELECT  qi.* , q.* FROM qi AS quotation_item LEFT JOIN q AS quotation ON qi.quotation_id = q.quotation_id WHERE project_id = :project_id ";
+        String sql = "SELECT * FROM quotation WHERE project_id = :project_id  ";
+        Map<String, Object> map = new HashMap();
+        map.put("project_id", projectId);
+        List<Quotation> quotationList = namedParameterJdbcTemplate.query(sql, map, new QuotationRowMapper());
+        if (quotationList.size() > 0) {
+            return quotationList;
+        } else return null;
+     }
 
+    @Override
+    public List<QuotationItem> getQuotationItemById(Integer quotationId){
+         String sql = "SELECT * FROM quotation_item WHERE quotation_id = :quotation_id  ";
          Map<String, Object> map = new HashMap();
-         map.put("project_id", projectId);
-         List <QuotationWithItemDto> quotationWithItemDtoList =namedParameterJdbcTemplate.query(sql,map,new QuotationWithItemRowMapper() );
-         if(quotationWithItemDtoList.size()>0){
-             return quotationWithItemDtoList;
-         } else return null;
-
+         map.put("quotation_id", quotationId);
+         List<QuotationItem> quotationItemList =  namedParameterJdbcTemplate.query(sql, map, new QuotationItemRowMapper());
+         if(quotationItemList.size()>0){
+             return quotationItemList;
+         }else return null;
     }
 
     @Override
     public void updateProfitById(Integer projectId,BigDecimal profit) {
+
         String sql = "UPDATE projects SET profit= :profit  WHERE project_id = :project_id    ";
         Map<String, Object> map = new HashMap();
         map.put("project_id", projectId);
@@ -248,10 +253,10 @@ public class ProjectsDaoImpl implements ProjectsDao {
     }
     @Override
     public void updatePeriod(Integer projectId , Integer period){
-         String sql  = "UPDATE projects SET period = :period  WHERE project_id = :project_id    ";
+         String sql  = "UPDATE projects SET construction_period = :construction_period  WHERE project_id = :project_id    ";
          Map<String, Object> map = new HashMap();
          map.put("project_id", projectId);
-         map.put("period",period);
+         map.put("construction_period",period);
          namedParameterJdbcTemplate.update(sql, map);
 
 
@@ -260,11 +265,10 @@ public class ProjectsDaoImpl implements ProjectsDao {
     @Override
     public Integer createReceived(NewReceived newReceived){
 
-         String sql = " INSERT received (project_id, name, construction_category, received_payment, received_time) VALUES ( :project_id, :name, :construction_category, :received_payment, :received_time)  ";
+         String sql = " INSERT received (project_id, name, received_payment, received_time) VALUES ( :project_id, :name, :received_payment, :received_time)  ";
          Map<String, Object> map = new HashMap();
          map.put("project_id", newReceived.getProjectId());
          map.put("name", newReceived.getName());
-         map.put("construction_category", newReceived.getConstructionCategory());
          map.put("received_payment", newReceived.getReceivedPayment());
          Date now = new Date();
          map.put("received_time", now);
@@ -288,9 +292,9 @@ public class ProjectsDaoImpl implements ProjectsDao {
 
     @Override
     public Received getReceivedById(Integer receivedId){
-         String sql = " SELECT * FROM received  WHERE project_id = :project_id   ";
+         String sql = " SELECT * FROM received  WHERE received_id = :received_id";
          Map<String, Object> map = new HashMap();
-         map.put("project_id", receivedId);
+         map.put("received_id", receivedId);
          List<Received> receivedList =  namedParameterJdbcTemplate.query(sql,map,new ReceivedRowMapper());
          if(receivedList.size()>0){
              return receivedList.get(0);

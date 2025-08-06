@@ -4,10 +4,12 @@ import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
+import com.masonlian.thejournal.model.Attendance;
 import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.model.Salary;
 import com.masonlian.thejournal.service.HumanResourceService;
 import com.masonlian.thejournal.util.Page;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class HumanResourceController {
     //主管創建人事檔案
     @PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/employee")
-    public ResponseEntity<LaborRole>  createProfile(@RequestBody CreateLaborRoleRequest createLaborRoleRequest) {
+    public ResponseEntity<LaborRole>  createProfile(@Valid @RequestBody CreateLaborRoleRequest createLaborRoleRequest) {
 
         Integer employeeId= humanResourceService.createProfile(createLaborRoleRequest);
         LaborRole laborRole = humanResourceService.getEmployeeById(employeeId);
@@ -122,12 +124,23 @@ public class HumanResourceController {
         return ResponseEntity.status(HttpStatus.OK).body(salariesPage);
 
 
+    }
+
+    @GetMapping("/employee/attendance/{name}")
+    public ResponseEntity <List<Attendance>>  getAttendanceRecord(@PathVariable String name ){
+
+        List<Attendance> laborAttendanceRecord =  humanResourceService.getAttendanceRecord(name);
+        return ResponseEntity.status(HttpStatus.OK).body(laborAttendanceRecord);
+
+
 
 
 
 
 
     }
+
+
 
 
 

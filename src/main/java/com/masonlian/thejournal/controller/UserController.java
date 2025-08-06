@@ -1,5 +1,6 @@
 package com.masonlian.thejournal.controller;
 
+import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.dto.LoginResponse;
 import com.masonlian.thejournal.dto.request.UserLogInRequest;
 import com.masonlian.thejournal.dto.request.UserRegisterRequest;
@@ -49,17 +50,20 @@ public class UserController {
      userLogInRequest.setLastLoginTime(now);
      User user =  userService.logIn(userLogInRequest);
 
+     System.out.println("使用者姓名為:"+user.getName());
+
      Map<String,Object> clams = new HashMap<>();
 
-     clams.put("userId",user.getUserId());
-     clams.put("sub",user.getName());
-     clams.put("email",user.getEmail());
-     clams.put("level",user.getLevel());
 
-     jwtTokenUtil.generateToken(clams);
+     clams.put("userId",user.getUserId());
+     clams.put("userName",user.getName());
+     clams.put("email",user.getEmail());
+     clams.put("level",user.getLevel().toString());
+
+     jwtTokenUtil.generateToken(clams,user);
 
      LoginResponse loginResponse = new LoginResponse();
-     loginResponse.setToken(jwtTokenUtil.generateToken(clams));
+     loginResponse.setToken(jwtTokenUtil.generateToken(clams,user));
      loginResponse.setUserName(user.getName());
      loginResponse.setUserId(user.getUserId());
 

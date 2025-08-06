@@ -18,7 +18,7 @@ public class FinancialStatementRowMapper  implements RowMapper<FinancialStatemen
         financialStatement.setProfit(rs.getBigDecimal("profit"));
         financialStatement.setMaterialPayable(rs.getBigDecimal("material_payable"));
         financialStatement.setReceived(rs.getBigDecimal("received"));
-        financialStatement.setSummary(rs.getString("summary"));
+
         return financialStatement;
 
     }

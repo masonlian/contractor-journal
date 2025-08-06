@@ -5,6 +5,7 @@ import com.masonlian.thejournal.model.FinancialStatement;
 import com.masonlian.thejournal.service.FinancialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -22,9 +23,12 @@ public class FinancialServiceImpl implements FinancialService {
         Integer month = timestamp.toLocalDateTime().getMonthValue();
 
         Integer quarter = 0;
-        getQuarter(month);
+        quarter = getQuarter(month);
 
+        System.out.println("季度為: " + quarter);
         FinancialStatement financialStatement =  financialDao.getStatementByQuarter(quarter);
+        System.out.println("被分配到的財報季度欄位為:: " + financialStatement.getQuarter());
+
         BigDecimal newReceived = financialStatement.getReceived().add(received);
 
         financialDao.updateReceived(quarter, newReceived );
@@ -35,25 +39,28 @@ public class FinancialServiceImpl implements FinancialService {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Integer month = timestamp.toLocalDateTime().getMonthValue();
         Integer quarter = 0;
-        getQuarter(month);
+        quarter = getQuarter(month);
 
         FinancialStatement financialStatement =  financialDao.getStatementByQuarter(quarter);
         BigDecimal newAmount = financialStatement.getMaterialPayable().add(totalAmount);
 
-        financialDao.updateMaterialPayable(quarter , newAmount );
+        financialDao.updateMaterialPayable( quarter , newAmount );
 
     }
 
+    @Transactional
     @Override
     public void updateProfit(BigDecimal profit){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Integer month = timestamp.toLocalDateTime().getMonthValue();
         Integer quarter = 0;
-        getQuarter(month);
+        quarter =  getQuarter(month);
 
         FinancialStatement financialStatement =  financialDao.getStatementByQuarter(quarter);
         BigDecimal newProfit = financialStatement.getProfit().add(profit);
+
+        System.out.println("報表要被更新的利潤為: " + newProfit +"更新在季度" + quarter);
 
         financialDao.updateProfit(quarter,newProfit);
 
@@ -61,6 +68,8 @@ public class FinancialServiceImpl implements FinancialService {
 
     @Override
     public FinancialStatement  getStatementByQuarter(Integer quarter){
+
+        System.out.println("財報季度為:" + quarter);
 
         return financialDao.getStatementByQuarter(quarter);
 
@@ -72,7 +81,7 @@ public class FinancialServiceImpl implements FinancialService {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Integer month = timestamp.toLocalDateTime().getMonthValue();
         Integer quarter = 0;
-        getQuarter(month);
+        quarter = getQuarter(month);
 
         FinancialStatement financialStatement = financialDao.getStatementByQuarter(quarter);
         BigDecimal newLaborCost =  financialStatement.getLaborCost().add(laborCost);

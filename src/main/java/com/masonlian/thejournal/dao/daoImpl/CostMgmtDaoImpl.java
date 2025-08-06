@@ -96,7 +96,7 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
     @Override
     public Material getMaterialByName(String materialName) {
 
-        String sql = "SELECT material_id, material_type, unit_price, image_url, specification WHERE material_name = :material_name  ";
+        String sql = "SELECT * FROM material  WHERE material_name = :material_name";
         Map<String, Object> map = new HashMap<>();
         map.put("material_name", materialName);
         List<Material> materialList = namedParameterJdbcTemplate.query(sql, map, new MaterialMgmtRowMapper());
@@ -232,13 +232,14 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
 
  @Override
  public Integer createMaterialEvent(BigDecimal totalAmount, Integer projectId){
-        String sql = " INSERT  material_events (total_amount, project_id, created_time ) VALUES (:total_amount, :project_id, created_time) ";
+        String sql = " INSERT  material_events (total_amount, project_id, created_date ) VALUES (:total_amount, :project_id, :created_date) ";
         Map<String, Object> map = new HashMap<>();
+
         map.put("total_amount", totalAmount);
         map.put("project_id", projectId);
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        map.put("created_time", timestamp);
+        map.put("created_date", timestamp);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update( sql, new MapSqlParameterSource(map), keyHolder);
@@ -249,7 +250,7 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
  }
   @Override
   public void createMaterialUsed(Integer materialEventId, List<MaterialUsed> materialUsedList){
-      String sql = "INSERT  material_used ( material_name, unit, amount, material_event_id)  VALUES (:material_name, :unit, :amount, material_event_id) ";
+      String sql = "INSERT  material_used ( material_name, unit, amount, material_event_id)  VALUES (:material_name, :unit, :amount, :material_event_id) ";
       MapSqlParameterSource [] mapSqlParameterSources = new MapSqlParameterSource[materialUsedList.size()];
       for(int i = 0; i < materialUsedList.size(); i++){
 
@@ -267,9 +268,11 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
 
     @Override
     public MaterialEvent getMaterialEventById(Integer materialEventId){
-        String sql = " SELECT * FROM material_events WHERE material_event_id = :material_event_id ";
+
+        System.out.println("material event id 為:"+materialEventId);
+        String sql = " SELECT * FROM material_events WHERE material_events_id = :material_events_id ";
         Map<String, Object> map = new HashMap<>();
-        map.put("material_event_id", materialEventId);
+        map.put("material_events_id", materialEventId);
 
         List<MaterialEvent> materialEventList =  namedParameterJdbcTemplate.query(sql, map, new MaterialEventRowMapper());
         if(materialEventList.size() >0)
@@ -279,20 +282,29 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
     }
 
     @Override
-    public void createAccountPayable(MaterialUsed materialUsed){
+    public void createAccountPayable(Integer materialEventId, MaterialUsed materialUsed){
+
         String sql = " INSERT account_payable ( supplier, month, material_event_id, payable_amount, last_modified_date, already_paid) VALUES ( :supplier, :month, :material_event_id, :payable_amount, :last_modified_date, :already_paid) ";
         Map<String, Object> map = new HashMap<>();
 
         String name =  materialUsed.getMaterialName();
         Material material = getMaterialByName(name);
-        map.put(" supplier",material.getSupplier());
+        System.out.println("供給商為:"+material.getSupplier());
+
+        map.put("supplier",material.getSupplier());
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Integer month = timestamp.toLocalDateTime().getMonthValue();
+
         map.put("month", month);
         map.put("payable_amount", materialUsed.getAmount());
         map.put("last_modified_date", timestamp);
+        map.put("material_event_id",materialEventId);
         map.put("already_paid", false   );
+
+        System.out.println("建材事件ID為："+materialUsed.getMaterialEventId());
+
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update( sql, new MapSqlParameterSource(map), keyHolder);
 
@@ -302,10 +314,10 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
     @Override
     public void  payToSupplier(Integer payableId, Boolean alreadyPaid){
 
-        String sql = "  UPDATE account_payable SET already_paid = :already_paid WHERE payableId = :payableId  ";
+        String sql = "  UPDATE account_payable SET already_paid = :already_paid WHERE payable_id = :payable_id  ";
         Map<String, Object> map = new HashMap<>();
         map.put("already_paid", alreadyPaid);
-        map.put("payableId", payableId);
+        map.put("payable_id", payableId);
         namedParameterJdbcTemplate.update(sql, map);
 
     }
@@ -330,7 +342,7 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
         Map<String, Object> map = new HashMap<>();
 
         if(queryPara.getSearch() != null){
-            sql = sql+ " AND search LIKE :search  ";
+            sql = sql+ " AND supplier LIKE :search  ";
             map.put("search", queryPara.getSearch());
 
         }
@@ -345,6 +357,36 @@ public class CostMgmtDaoImpl implements CostMgmtDao {
         if (accountPayableList.size() >0)
             return accountPayableList;
         else return null;
+
+    }
+
+    @Override
+    public Construction getConstructionByName(String constructionName) {
+
+        String sql = " SELECT * FROM construction WHERE construction_item = :constructionName  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("constructionName", constructionName);
+
+        List<Construction> constructionList =  namedParameterJdbcTemplate.query(sql, map, new ConstructionRowMapper());
+        if(constructionList.size() >0)
+            return constructionList.get(0);
+        else return null;
+
+    }
+
+    @Override
+    public List<MaterialEvent> getMaterialEventByProject(Integer projectId){
+
+        String sql = " SELECT * FROM material_events WHERE project_id = :project_id  ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("project_id", projectId);
+        List<MaterialEvent> materialEventList = namedParameterJdbcTemplate.query(sql, map, new MaterialEventRowMapper());
+        if(materialEventList.size() >0){
+            return materialEventList;
+        } else return null;
+
+
+
 
     }
 

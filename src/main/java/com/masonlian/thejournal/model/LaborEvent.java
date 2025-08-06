@@ -7,6 +7,7 @@ public class LaborEvent {
     private Integer laborEventId;
     private Integer eventId;
     private String name;
+    private Integer employeeId;
 
     public boolean isAttend() {
         return attend;
@@ -52,4 +53,11 @@ public class LaborEvent {
         this.name = name;
     }
 
+    public Integer getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
+    }
 }
