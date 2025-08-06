@@ -8,12 +8,14 @@ import com.masonlian.thejournal.service.CostMgmtService;
 import com.masonlian.thejournal.service.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Arrays;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 
 
@@ -126,6 +128,7 @@ public class CostMgmtServiceImpl implements CostMgmtService {
 
     }
 
+    @Transactional
     @Override
     public Integer createMaterialEvent(CreateMaterialEventRequest createMaterialEventRequest){
 
@@ -134,9 +137,12 @@ public class CostMgmtServiceImpl implements CostMgmtService {
 
         List<MaterialUsed> materialUsedList = new ArrayList<>();
 
-        for(MaterialItem materialItem :createMaterialEventRequest.getUsedList() ){
+        for(MaterialItem materialItem :createMaterialEventRequest.getUsedList()){
 
             Material material = costMgmtDao.getMaterialByName( materialItem.getMaterialName());
+
+            System.out.println("被找出的建材為:"+material.getMaterialName());
+            System.out.println("建材名為:"+material.getMaterialName());
 
             MaterialUsed materialUsed = new MaterialUsed();
 
@@ -144,20 +150,23 @@ public class CostMgmtServiceImpl implements CostMgmtService {
             materialUsed.setUnit(materialItem.getUnit());
             BigDecimal unitPrice =  material.getUnitPrice();
 
+            System.out.println("建材單價為:"+unitPrice);
+            System.out.println("建材用量為:"+materialUsed.getUnit());
+
             materialUsed.setAmount(unitPrice.multiply(materialUsed.getUnit()));
 
             BigDecimal amount = materialUsed.getAmount();
             totalAmount = totalAmount.add(amount);
 
-            createAccountPayable(materialUsed);
+            System.out.println("被使用的物料為:"+materialUsed.getMaterialName()+"金額是:"+amount);
+
 
             materialUsedList.add(materialUsed);
-
-
         }
 
+        System.out.println("建材總金額為:"+totalAmount);
 
-        financialService.updateMaterialPayable(totalAmount);
+        financialService.updateMaterialPayable(totalAmount);  //2025,08,03
 
         Integer materialEventId = costMgmtDao.createMaterialEvent(totalAmount,createMaterialEventRequest.getProjectId());
 
@@ -165,15 +174,24 @@ public class CostMgmtServiceImpl implements CostMgmtService {
 
         costMgmtDao.createMaterialUsed( materialEventId,materialUsedList);
 
+        createAccountPayable(materialEventId, materialUsedList);
+
 
         return materialEventId;
 
     }
 
     @Override
-    public void createAccountPayable(MaterialUsed materialUsed){
+    public void createAccountPayable(Integer materialEventId ,List<MaterialUsed> materialUsedList){
 
-         costMgmtDao.createAccountPayable(materialUsed);
+        for (MaterialUsed materialUsed : materialUsedList) {
+
+
+
+            costMgmtDao.createAccountPayable(materialEventId,materialUsed);
+
+        }
+
 
     }
 
@@ -205,5 +223,13 @@ public class CostMgmtServiceImpl implements CostMgmtService {
 
         return costMgmtDao.getPayable(queryPara);
     }
+
+    @Override
+    public List<MaterialEvent> getMaterialEventByProject(Integer projectId){
+
+        return costMgmtDao.getMaterialEventByProject(projectId);
+    }
+
+
 
 }

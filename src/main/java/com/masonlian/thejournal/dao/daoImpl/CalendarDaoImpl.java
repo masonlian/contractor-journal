@@ -15,6 +15,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +32,15 @@ public class CalendarDaoImpl implements CalendarDao {
     @Override
     public Integer createCalendarEvent(CalendarEventRequest calendarEventRequest) {
 
-        String sql = " INSERT INTO  calendar_events ( event_id, project_name,finished, construction_category,daily_expenses, notation, event_date)  VALUES  ( :event_id, :project_id,finished, :construction_category, :daily_expenses, :notation, :event_date) ";
+        String sql = " INSERT INTO  calendar_events ( project_name , finished, construction_category,daily_expenses, notation, event_date ,incidental_expenses )  VALUES  ( :project_name, finished, :construction_category, :daily_expenses, :notation, :event_date , :incidental_expenses ) ";
         Map<String, Object> map = new HashMap<>();
-        map.put("project_neame", calendarEventRequest.getProjectName());
+        map.put("project_name", calendarEventRequest.getProjectName());
         map.put("finished", calendarEventRequest.getFinished());
-        map.put("construction_category", calendarEventRequest.getConstructionCategory());
+        map.put("construction_category", calendarEventRequest.getConstructionCategory().toString());
         map.put("daily_expenses", calendarEventRequest.getDailyExpenses());
         map.put("notation", calendarEventRequest.getNotation());
         map.put("event_date", calendarEventRequest.getEventDate());
+        map.put("incidental_expenses", calendarEventRequest.getIncidentalExpenses());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
         Integer eventId = keyHolder.getKey().intValue();
@@ -47,7 +50,8 @@ public class CalendarDaoImpl implements CalendarDao {
     @Override
     public CalendarEvent getCalendarEventById(Integer eventId) {
 
-        String sql = " SELECT project_name, finished, construction_category, daily_expense, notation, event_date FROM calendar_events WHERE event_id = :event_id";
+        String sql = " SELECT * FROM calendar_events WHERE event_id = :event_id";
+        System.out.println("eveId為:"+eventId);
         Map<String, Object> map = new HashMap<>();
         map.put("event_id", eventId);
         List<CalendarEvent> calendarEventList = namedParameterJdbcTemplate.query(sql, map, new CalendarEventRowMapper());
@@ -87,14 +91,20 @@ public class CalendarDaoImpl implements CalendarDao {
 
         //透過date這個欄位調取event table連接到跟calendar table 回傳一個List的格式給controller層
 
-        String sql = " SELECT e.event_id, e.finished, e.construction_category, e.daily_expenses, e.notation, e.project_name, c.is_weekend   FROM calendar_events AS e LEFT JOIN calendar AS c  ON e.event_date = calendar_date WHERE calendar_date = :calendar_date ";
+        String sql = " SELECT e.* , c.is_weekend   FROM calendar_events AS e LEFT JOIN calendar AS c  ON e.event_date = c.calendar_date WHERE c.calendar_date = :calendar_date ";
         Map<String, Object> map = new HashMap<>();
+        System.out.println("查詢日期為:"+calendarQueryPara.getCalendarDate());
+
         map.put("calendar_date", calendarQueryPara.getCalendarDate());
 
-        sql = sql + "LIMIT :limit OFFSET :offset";
+        sql = sql + " LIMIT :limit OFFSET :offset ";
+
+        System.out.println("limit為："+calendarQueryPara.getLimit()+"offset是"+calendarQueryPara.getOffset());
         map.put("limit", calendarQueryPara.getLimit());
         map.put("offset", calendarQueryPara.getOffset());
+
         List<CalendarEvent> calendarEventList = namedParameterJdbcTemplate.query(sql, map, new CalendarEventRowMapper());
+        System.out.println("Query結果為"+ calendarEventList.get(0).getProjectName());
         if (calendarEventList.size() > 0)
             return calendarEventList;
         else return null;
@@ -107,11 +117,13 @@ public class CalendarDaoImpl implements CalendarDao {
 
 
         for (LaborRole laborRole : laborRoleList) {
-            String sql = "INSERT labor_event (event_id, name ) VALUES ( :event_id, :name) ";
+            String sql = "INSERT labor_event (event_id, name, employee_id ) VALUES ( :event_id, :name , :employee_id ) ";
             Map<String, Object> map = new HashMap<>();
 
             map.put("event_id", eventId);
             map.put("name", laborRole.getName());
+            map.put("employee_id", laborRole.getEmployeeId());
+
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
             namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
@@ -174,6 +186,7 @@ public class CalendarDaoImpl implements CalendarDao {
         String sql = " UPDATE calendar_events SET daily_expenses = :daily_expenses WHERE event_id = :event_id     ";
         Map<String, Object> map = new HashMap<>();
         map.put("daily_expenses", newExpenses);
+        map.put("event_id", eventId);
         namedParameterJdbcTemplate.update(sql, map);
 
 
@@ -197,15 +210,16 @@ public class CalendarDaoImpl implements CalendarDao {
 
 
     @Override
-    public Integer finishProject(Integer eventId, CalendarEventRequest calendarEventRequest){
+    public Integer finishProject(Integer eventId,FinishProjectRequest finishProjectRequest){
 
         String sql = " UPDATE calendar_events SET finished = :finished WHERE event_id = :event_id ";
         Map<String, Object> map = new HashMap<>();
         map.put("event_id", eventId);
-        map.put("finished", calendarEventRequest.getFinished());
+        map.put("finished", finishProjectRequest.getFinish());
         namedParameterJdbcTemplate.update(sql, map);
 
-        Project project =  projectsDao.getProjectByName(projectsDao.getProjectByName(calendarEventRequest.getProjectName()).getProjectName());
+        String projectName =  getCalendarEventById(eventId).getProjectName();
+        Project project =  projectsDao.getProjectByName(projectName);
         if (project != null){
             return project.getProjectId();
         }
@@ -215,7 +229,7 @@ public class CalendarDaoImpl implements CalendarDao {
 
     @Override
     public void laborAttend(Integer eventId , Integer employeeId,AttendanceRequest attendanceRequest ){
-        String sql =  " UPDATE  labor_events SET attend = :attend WHERE event_id = :event_id  AND employee_id = :employee_id  ";
+        String sql =  " UPDATE  labor_event SET attend = :attend WHERE event_id = :event_id  AND employee_id = :employee_id  ";
         Map<String, Object> map = new HashMap<>();
         map.put("event_id", eventId);
         map.put("attend", attendanceRequest.getAttendance());

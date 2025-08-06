@@ -4,6 +4,7 @@ import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.AttendanceRequest;
 import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
+import com.masonlian.thejournal.model.Attendance;
 import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.model.Salary;
 
@@ -29,4 +30,5 @@ public interface HumanResourceDao {
     void updateExpectedSalary(Salary monthSalary);
     void updateActuallySalary (Salary monthSalary);
     List<Salary> getSalaries(QueryPara  employeeQueryPara);
+    List<Attendance> getAttendanceRecord(String name);
 }

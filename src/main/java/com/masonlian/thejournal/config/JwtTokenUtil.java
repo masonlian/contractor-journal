@@ -1,6 +1,7 @@
 package com.masonlian.thejournal.config;
 
 
+import com.masonlian.thejournal.model.User;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +57,12 @@ public class JwtTokenUtil {
 
 
 
-    public String generateToken(Map<String,Object> claim  ) {
+    public String generateToken(Map<String,Object> claims, User user  ) {
 
 
         return Jwts.builder()
-                .setClaims(claim)
+                .setClaims(claims)
+                .setSubject(user.getName())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
                 .signWith(SignatureAlgorithm.HS512,jwtProperties.getSecret())

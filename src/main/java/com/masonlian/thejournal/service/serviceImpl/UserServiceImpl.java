@@ -52,6 +52,8 @@ public class UserServiceImpl implements UserService {
     public User  logIn(UserLogInRequest userLogInRequest) {
 
         User user = userDao.getUserByEmail(userLogInRequest.getEmail());
+        System.out.println("使用者在Service層為:"+user.getUserId());
+
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
                 if (user.getEmail()==null){
@@ -60,6 +62,7 @@ public class UserServiceImpl implements UserService {
                 if (passwordEncoder.matches(userLogInRequest.getPassword(),user.getPassword())) {
 
                     userDao.lastLoginTime(userLogInRequest);
+
 
                     return user;
                 }

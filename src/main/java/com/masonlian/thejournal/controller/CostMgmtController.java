@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//materialEvent不應該跟日曆綁在一起，不貼和現實。
+//materialEvent不應該跟日曆綁在一起，不貼合現實。
 @Validated
 @RestController
 public class CostMgmtController {
@@ -27,7 +27,7 @@ public class CostMgmtController {
     @Autowired
     private CostMgmtService costMgmtService;
 
-    @PreAuthorize("hasAnyAuthority('L0','L1','L2')")
+    //@PreAuthorize("hasAnyAuthority('L0','L1','L2')")
     @PostMapping("/cost/material")
     public ResponseEntity<String>  createMaterial(@Valid @RequestBody
                                              CreateMaterialRequest createMaterialRequest){
@@ -156,35 +156,36 @@ public class CostMgmtController {
 
     }
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
     @PostMapping("/material/event")
-    public ResponseEntity<MaterialEvent>  createMaterialEvent(@RequestBody CreateMaterialEventRequest createMaterialEventRequest){
+    public ResponseEntity<MaterialEvent>  createMaterialEvent(@Valid @RequestBody CreateMaterialEventRequest createMaterialEventRequest){
 
         Integer materialEventId  =  costMgmtService.createMaterialEvent(createMaterialEventRequest);
         MaterialEvent materialEvent = costMgmtService.getMaterialEventById(materialEventId);
+
+
         return ResponseEntity.status(HttpStatus.CREATED).body(materialEvent);
 
 
     }
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
-    @PutMapping("/payable/{payableId}  ") //
-    public ResponseEntity<AccountPayable> payToSupplier( @PathVariable Integer payablId ,  @RequestBody Boolean alreadyPaid  ){
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
+    @PutMapping("/payable/{payableId}") //
+    public ResponseEntity<AccountPayable> payToSupplier( @PathVariable Integer payableId ,  @RequestBody PaySupplierRequest paySupplierRequest  ){
 
-        costMgmtService.payToSupplier(payablId, alreadyPaid );
-        AccountPayable accountPayable =  costMgmtService.getPayableById(payablId);
+        costMgmtService.payToSupplier(payableId, paySupplierRequest.getAlreadyPaid() );
+        AccountPayable accountPayable =  costMgmtService.getPayableById(payableId);
         return ResponseEntity.status(HttpStatus.OK).body(accountPayable);
-
 
     } //
 
-    @PreAuthorize("hasAnyAuthority('L0','L1')")
+    //@PreAuthorize("hasAnyAuthority('L0','L1')")
     @GetMapping("/payable" )
-    public ResponseEntity<List<AccountPayable>> getPayable(@RequestParam   String search ,
-                                                    @RequestParam String orderBy,
-                                                     @RequestParam String sort,
-                                                     @RequestParam Integer limit,
-                                                     @RequestParam Integer offset ){
+    public ResponseEntity<List<AccountPayable>> getPayable(@RequestParam (required = false)  String search ,
+                                                    @RequestParam (defaultValue = "last_modified_date" ) String orderBy,
+                                                     @RequestParam (defaultValue = "desc" )String sort,
+                                                     @RequestParam  (name= "limit",defaultValue = "10")  @Max(100)  Integer limit,
+                                                     @RequestParam  (defaultValue = "0" )@Max(100)@Min(0) Integer offset ){
 
         QueryPara queryPara = new QueryPara();
         queryPara.setSearch(search);
@@ -199,6 +200,15 @@ public class CostMgmtController {
     }
 
 
+    @GetMapping("/cost/{projectId}")
+    public ResponseEntity<List<MaterialEvent>> getMaterialEventByProject(@PathVariable Integer projectId){
+
+
+        List<MaterialEvent> materialEventList =  costMgmtService.getMaterialEventByProject(projectId);
+        return ResponseEntity.status(HttpStatus.OK).body(materialEventList);
+
+
+    }
 
 
 

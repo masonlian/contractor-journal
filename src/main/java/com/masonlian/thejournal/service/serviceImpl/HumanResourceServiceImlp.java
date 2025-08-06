@@ -4,6 +4,7 @@ import com.masonlian.thejournal.dao.HumanResourceDao;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
+import com.masonlian.thejournal.model.Attendance;
 import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.model.Salary;
 import com.masonlian.thejournal.service.FinancialService;
@@ -88,6 +89,14 @@ public class HumanResourceServiceImlp implements HumanResourceService {
     public List<Salary> getSalaries(QueryPara  employeeQueryPara){
 
         return humanResourceDao.getSalaries(employeeQueryPara);
+
+
+    }
+
+    @Override
+    public List<Attendance> getAttendanceRecord(String name) {
+
+        return humanResourceDao.getAttendanceRecord(name);
 
 
     }

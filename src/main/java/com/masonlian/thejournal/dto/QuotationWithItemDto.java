@@ -1,30 +1,23 @@
 package com.masonlian.thejournal.dto;
 
+import com.masonlian.thejournal.model.QuotationItem;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class QuotationWithItemDto {
 
     private Integer projectId;
     private Integer quotationId;
-    public Timestamp createdDate;
-    public String createBy;
-    public String status;
-    public String summary;
-    public BigDecimal totalAmount;
-    private Integer quotationItemId;
+    private Timestamp createdDate;
+    private String createBy;
+    private String status;
+    private String summary;
+    private BigDecimal totalAmount;
 
-    private String materialName;
-    private BigDecimal materialUnit;
-    private String materialSpec;
+    private List<QuotationItem> quotationItemList;
 
-    private BigDecimal materialAmount;
-
-    private BigDecimal constructionUnit;
-    private String constructionItem;
-    private String constructionSpec;
-
-    private BigDecimal constructionAmount;
 
     public Integer getProjectId() {
         return projectId;
@@ -50,20 +43,20 @@ public class QuotationWithItemDto {
         this.createdDate = createdDate;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getCreateBy() {
         return createBy;
     }
 
     public void setCreateBy(String createBy) {
         this.createBy = createBy;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getSummary() {
@@ -82,75 +75,11 @@ public class QuotationWithItemDto {
         this.totalAmount = totalAmount;
     }
 
-    public Integer getQuotationItemId() {
-        return quotationItemId;
+    public List<QuotationItem> getQuotationItemList() {
+        return quotationItemList;
     }
 
-    public void setQuotationItemId(Integer quotationItemId) {
-        this.quotationItemId = quotationItemId;
-    }
-
-    public String getMaterialName() {
-        return materialName;
-    }
-
-    public void setMaterialName(String materialName) {
-        this.materialName = materialName;
-    }
-
-    public String getMaterialSpec() {
-        return materialSpec;
-    }
-
-    public void setMaterialSpec(String materialSpec) {
-        this.materialSpec = materialSpec;
-    }
-
-    public BigDecimal getMaterialUnit() {
-        return materialUnit;
-    }
-
-    public void setMaterialUnit(BigDecimal materialUnit) {
-        this.materialUnit = materialUnit;
-    }
-
-    public BigDecimal getMaterialAmount() {
-        return materialAmount;
-    }
-
-    public void setMaterialAmount(BigDecimal materialAmount) {
-        this.materialAmount = materialAmount;
-    }
-
-    public String getConstructionSpec() {
-        return constructionSpec;
-    }
-
-    public void setConstructionSpec(String constructionSpec) {
-        this.constructionSpec = constructionSpec;
-    }
-
-    public BigDecimal getConstructionAmount() {
-        return constructionAmount;
-    }
-
-    public void setConstructionAmount(BigDecimal constructionAmount) {
-        this.constructionAmount = constructionAmount;
-    }
-
-    public String getConstructionItem() {
-        return constructionItem;
-    }
-
-    public void setConstructionItem(String constructionItem) {
-        this.constructionItem = constructionItem;
-    }
-
-    public BigDecimal getConstructionUnit() {
-        return constructionUnit;
-    }
-
-    public void setConstructionUnit(BigDecimal constructionUnit) {
-        this.constructionUnit = constructionUnit;
+    public void setQuotationItemList(List<QuotationItem> quotationItemList) {
+        this.quotationItemList = quotationItemList;
     }
 }

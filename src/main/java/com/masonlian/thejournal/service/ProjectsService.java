@@ -21,7 +21,8 @@ public interface ProjectsService {
     void updateProjectById(Integer projectId,ProjectRequest projectRequest);
     List<Project> getProjects(QueryPara queryPara);
 
-    BigDecimal updateBalanceByDailyExpense(String projectName ,BigDecimal newDailyExpense );
+    void updateBalanceByDailyExpense(String projectName ,BigDecimal newDailyExpense );
+    void updateBalanceByWagePerDay(String projectName, BigDecimal newWagePerDay);
 
     Integer createQuotation(CustomUserDetails userDetails  , CreateQuotationRequest createQuotationRequest);
     Quotation getQuotationById(Integer quotationId);

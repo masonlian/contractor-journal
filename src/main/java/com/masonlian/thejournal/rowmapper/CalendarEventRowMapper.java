@@ -24,7 +24,15 @@ public class CalendarEventRowMapper implements RowMapper {
         String categoryStr = rs.getString("construction_category");
         ConstructionCategory category= ConstructionCategory.valueOf(categoryStr);
         event.setConstructionCategory(category);
-        event.setIs_weekend(rs.getBoolean("is_weekend"));
+
+        event.setDailyExpenses(rs.getBigDecimal("daily_expenses"));
+
+        event.setEventDate(rs.getDate("event_date").toLocalDate());
+
+        event.setIncidentalExpenses(rs.getBigDecimal("incidental_expenses"));
+        event.setWagePerDay(rs.getBigDecimal("wage_per_day"));
+        event.setMaterialCost(rs.getBigDecimal("material_cost"));
+
         return event;
     }
 

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 public class SalaryRowMapper implements RowMapper<Salary> {
 
     public Salary mapRow(ResultSet rs, int rowNum) throws SQLException {
+
         Salary salary = new Salary();
 
         salary.setMonth(rs.getInt("month"));

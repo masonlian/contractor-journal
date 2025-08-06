@@ -27,11 +27,13 @@ public interface CostMgmtDao {
     void updateConstructionBydId (Integer constructionId,ConstructionRequest constructionRequest);
     List<Construction> getConstructionItems(QueryPara queryPara);
     Construction getConstructionItemByName (String constructionItem);
+    Construction getConstructionByName(String constructionName);
 
     Integer createMaterialEvent(BigDecimal totalAmount, Integer projectId);
     void createMaterialUsed(Integer materialEventId, List<MaterialUsed> materialUsedList);
     MaterialEvent getMaterialEventById(Integer materialEventId);
-    void createAccountPayable(MaterialUsed materialUsed);
+    void createAccountPayable(Integer materialEventId, MaterialUsed materialUsed);
+    List<MaterialEvent> getMaterialEventByProject(Integer projectId);
 
     void  payToSupplier(Integer payableId, Boolean alreadyPaid);
     AccountPayable  getPayableById(Integer payableId);

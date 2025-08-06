@@ -5,8 +5,10 @@ import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.AttendanceRequest;
 import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
+import com.masonlian.thejournal.model.Attendance;
 import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.model.Salary;
+import com.masonlian.thejournal.rowmapper.AttendanceRowMapper;
 import com.masonlian.thejournal.rowmapper.EmployeeRowMapper;
 import com.masonlian.thejournal.rowmapper.SalaryRowMapper;
 import jakarta.validation.OverridesAttribute;
@@ -17,6 +19,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -32,14 +35,14 @@ public class HumanResourceDaoImpl implements HumanResourceDao {
     @Override
     public Integer createProfile(CreateLaborRoleRequest createLaborRoleRequest){
 
-        String sql = "INSERT INTO human_resource (  name,  wage, image_url, phone_number, level, role , email , created_date ) VALUES ( :name,:wage, :image_url, :phoneNumber , :level, :role , :email, :createdDate )";
+        String sql = "INSERT INTO labor_role ( name,  wage, image_url, phone_number, level, role , email , created_date ) VALUES ( :name,:wage, :image_url, :phone_number , :level, :role , :email, :created_date )";
         Map<String,Object> map = new HashMap<>();
         map.put("name",createLaborRoleRequest.getName());
         map.put("wage",createLaborRoleRequest.getWage());
         map.put("image_url",createLaborRoleRequest.getImageUrl());
         map.put("phone_number",createLaborRoleRequest.getPhoneNumber());
-        map.put("level",createLaborRoleRequest.getLevel());
-        map.put("role",createLaborRoleRequest.getRole());
+        map.put("level",createLaborRoleRequest.getLevel().toString());
+        map.put("role",createLaborRoleRequest.getRole().toString());
         map.put("email",createLaborRoleRequest.getEmail());
 
         Timestamp date = new Timestamp(System.currentTimeMillis()) ;
@@ -55,7 +58,7 @@ public class HumanResourceDaoImpl implements HumanResourceDao {
     @Override
     public LaborRole getEmployeeById (Integer employeeId){
 
-        String sql = "SELECT employee_id, name, wage, image_url, phone_number FROM human_resource WHERE employee_id = :employee_id ";
+        String sql = "SELECT employee_id, name, wage, image_url, phone_number  ,level, role, email, created_date FROM labor_role WHERE employee_id = :employee_id ";
         Map <String, Object>map = new HashMap<>();
         map.put("employee_id",employeeId);
 
@@ -70,7 +73,7 @@ public class HumanResourceDaoImpl implements HumanResourceDao {
 @Override
 public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
 
-        String sql =" SELECT employee_id, name, wage, image_url, phone_number FROM human_resource WHERE 1=1 ";
+        String sql =" SELECT employee_id, name, wage, image_url, phone_number FROM labor_role WHERE 1=1 ";
         Map<String, Object> map = new HashMap<>();
 
         if(employeeQueryPara.getJoblevel() != null )
@@ -89,7 +92,7 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
     @Override
     public void deleteProfileById (Integer employeeId){
 
-        String sql = "DELETE FROM human_resource WHERE employee_id = :employeeId";
+        String sql = "DELETE FROM labor_role  WHERE employee_id = :employeeId";
         Map<String,Object> map = new HashMap<>();
         map.put("employeeId",employeeId);
         namedParameterJdbcTemplate.update(sql,map);
@@ -99,7 +102,7 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
     @Override
     public void updateProfileById (Integer employeeId, LaborEventQueryRequest laborEventQueryRequest){
 
-        String sql = " UPDATE human_resource SET name = :name, wage = :wage, image_url = :image_url, phone_number= :phone_number where employee_id = :employee_id ";
+        String sql = " UPDATE labor_role  SET name = :name, wage = :wage, image_url = :image_url, phone_number= :phone_number where employee_id = :employee_id ";
         Map<String,Object> map = new HashMap<>();
         map.put("name", laborEventQueryRequest.getName());
         map.put("wage", laborEventQueryRequest.getWage());
@@ -113,7 +116,7 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
     @Override
     public LaborRole getEmployeeByName(String name){
 
-        String sql = "SELECT employee_id, name, wage, image_url, phone_number FROM human_resource WHERE employee_id = :employee_id ";
+        String sql = "SELECT * FROM labor_role  WHERE name= :name ";
         Map <String, Object>map = new HashMap<>();
         map.put("name",name);
 
@@ -129,7 +132,7 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
     @Override
     public void createAttendance(Timestamp date, List<LaborRole> laborRoleList){
 
-        String sql  = "INSERT attendance  ( attendance_date, is_attendance, name, employee_id ) VALUES  ( :attendance_date, :is_attendance, :name, :employee_id ) WHERE attendance_id = :attendance_id";
+        String sql  = "INSERT attendance  ( attendance_date, name, employee_id ) VALUES  ( :attendance_date, :name, :employee_id ) ";
         MapSqlParameterSource[] mapSqlParameterSource = new MapSqlParameterSource[laborRoleList.size()];
         for(int i = 0 ; i<laborRoleList.size();i++){
             mapSqlParameterSource[i] = new MapSqlParameterSource();
@@ -145,7 +148,7 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
 
     @Override
     public LaborRole getEmployeeByEmail(String email){
-        String sql = "SELECT * FROM human_resource WHERE email = :email   ";
+        String sql = "SELECT * FROM labor_role WHERE email = :email   ";
         Map<String,Object> map = new HashMap<>();
         map.put("email",email);
         List<LaborRole> laborRoleList =  namedParameterJdbcTemplate.query(sql,map,new EmployeeRowMapper());
@@ -180,10 +183,18 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
     @Override
     public Salary getSalary(Integer month, Integer employeeId){
 
-        String sql = "  SELECT * FROM salary  WHERE employee_id = :employee_id ";
+        System.out.println("month為:"+month);
+
+
+        String sql = "SELECT * FROM salary  WHERE employee_id = :employee_id AND month = :month  ";
+
         Map<String,Object> map = new HashMap<>();
+
         map.put("employee_id",employeeId);
+        map.put("month", month);
+
         List<Salary> salaryList = namedParameterJdbcTemplate.query(sql,map , new SalaryRowMapper());
+
         if(salaryList.size()>0){
             return salaryList.get(0);
         }   else return null;
@@ -195,7 +206,9 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
 
         String sql = " UPDATE salary SET  expected_salary = :expected_salary  WHERE employee_id = :employee_id   ";
         Map<String,Object> map = new HashMap<>();
-        map.put("expected_salary",monthSalary);
+        BigDecimal expectedSalary = monthSalary.getExpectedSalary();
+        map.put("expected_salary",expectedSalary);
+        map.put("employee_id",monthSalary.getEmployeeId());
         namedParameterJdbcTemplate.update(sql,map);
 
 
@@ -226,6 +239,22 @@ public List<LaborRole> getEmployees (QueryPara employeeQueryPara){
         List<Salary> salaries =  namedParameterJdbcTemplate.query(sql,map,new SalaryRowMapper());
         if(salaries.size()>0){
             return salaries;
+        }else return null;
+
+
+    }
+
+    @Override
+    public List<Attendance> getAttendanceRecord(String name){
+
+        String sql = " SELECT * FROM attendance  WHERE name = :name ";
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("name",name);
+
+        List<Attendance> attendanceList = namedParameterJdbcTemplate.query(sql,map,new AttendanceRowMapper());
+        if(attendanceList.size()>0){
+            return attendanceList;
         }else return null;
 
 

@@ -13,15 +13,10 @@ public class QuotationItemRowMapper implements RowMapper<QuotationItem> {
 
         quotationItem.setQuotationId(rs.getInt("quotation_id"));
 
-        quotationItem.setMaterialName(rs.getString("material_name"));
-        quotationItem.setMaterialUnit(rs.getBigDecimal("material_unit"));
-        quotationItem.setMaterialSpec(rs.getString("material_spec"));
-        quotationItem.setMaterialAmount(rs.getBigDecimal("material_amount"));
-
-        quotationItem.setConstructionItem(rs.getString("construction_item"));
-        quotationItem.setConstructionUnit(rs.getBigDecimal("construction_unit"));
-        quotationItem.setConstructionSpec(rs.getString("construction_spec"));
-        quotationItem.setConstructionAmount(rs.getBigDecimal("construction_amount"));
+        quotationItem.setConstructionItem(rs.getString("construct_item"));
+        quotationItem.setConstructionUnit(rs.getBigDecimal("construct_unit"));
+        quotationItem.setConstructionSpec(rs.getString("construct_spec"));
+        quotationItem.setConstruction_estimate(rs.getBigDecimal("construct_estimate"));
 
         return quotationItem;
 

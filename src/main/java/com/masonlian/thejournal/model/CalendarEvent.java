@@ -4,6 +4,8 @@ import com.masonlian.thejournal.constant.ConstructionCategory;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 // 人類最強大的能力就是持續修改嗎？
 public class CalendarEvent {
@@ -22,7 +24,7 @@ public class CalendarEvent {
     private BigDecimal dailyExpenses;
     private String notation;
     private Integer eventId;
-    private Timestamp eventDate;
+    private LocalDate eventDate;
     private BigDecimal incidentalExpenses;
 
     public BigDecimal getWagePerDay() {
@@ -76,11 +78,11 @@ public class CalendarEvent {
     private  Boolean is_weekend;
 
 
-    public Timestamp getEventDate() {
+    public LocalDate getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Timestamp eventDate) {
+    public void setEventDate(LocalDate eventDate) {
         this.eventDate = eventDate;
     }
 

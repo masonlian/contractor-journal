@@ -4,6 +4,7 @@ import com.masonlian.thejournal.constant.ConstructionCategory;
 import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.constant.MediaType;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 
@@ -30,15 +31,15 @@ public class QueryPara {
         this.level = level;
     }
 
-    public Date getCalendarDate() {
+    public LocalDate getCalendarDate() {
         return calendarDate;
     }
 
-    public void setCalendarDate(Date calendarDate) {
+    public void setCalendarDate(LocalDate calendarDate) {
         this.calendarDate = calendarDate;
     }
 
-    private Date calendarDate;
+    private LocalDate calendarDate;
 
     public ConstructionCategory getConstructionCategory() {
         return constructionCategory;

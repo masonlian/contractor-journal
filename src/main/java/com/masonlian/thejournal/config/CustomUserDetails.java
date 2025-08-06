@@ -16,15 +16,15 @@ public class CustomUserDetails implements UserDetails {
 
     private String email;
     private Integer userId;
-    private Level level;
-    private String username;
+    private String level;
+    private String userName;
 
 
-    public CustomUserDetails(String email, Integer userId, String level, String username) {
+    public CustomUserDetails(String email, Integer userId, String userName, String level) {
         this.email = email;
         this.userId = userId;
-        this.username = username;
-        this.level = Level.valueOf(level);
+        this.userName = userName;
+        this.level = level;
     }
 
 
@@ -32,8 +32,8 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(User user) {
         this.email = user.getEmail();
         this.userId = user.getUserId();
-        this.level = user.getLevel();
-        this.username = user.getName();
+        this.userName = user.getName();
+        this.level = user.getLevel().toString();
     }
 
     @Override
@@ -44,11 +44,13 @@ public class CustomUserDetails implements UserDetails {
     public String  getPassword(){return null;};
 
     @Override
-    public String getUsername() {return email;}
+    public String getUsername() {return userName;}
 
-    public Level getLevel() {return level;}
+    public String getLevel() {return level;}
 
     public Integer getUserId() {return userId;}
+
+    public String getEmail() {return email;}
 
 
 

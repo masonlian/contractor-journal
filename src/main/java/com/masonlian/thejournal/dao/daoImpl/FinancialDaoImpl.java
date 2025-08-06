@@ -22,7 +22,7 @@ public class FinancialDaoImpl implements FinancialDao {
    @Override
    public  void updateReceived(Integer quarter, BigDecimal received) {
 
-       String sql = "UPDATE fianancial_statement SET received = received WHERE quarter = :quarter";
+       String sql = "UPDATE financial_statement SET received = :received WHERE quarter = :quarter";
        Map<String, Object> map = new HashMap<>();
        map.put("quarter", quarter);
        map.put("received", received);
@@ -33,19 +33,22 @@ public class FinancialDaoImpl implements FinancialDao {
    @Override
    public  void updateMaterialPayable(Integer quarter , BigDecimal totalAmount){
 
-       String sql = " UPDATE  financial_statement SET material_payable = total_amount WHERE quarter = :quarter ";
+       String sql = " UPDATE  financial_statement SET material_payable = :total_amount WHERE quarter = :quarter ";
        Map<String, Object> map = new HashMap<>();
        map.put("quarter", quarter);
        map.put("total_amount", totalAmount);
+
        namedParameterJdbcTemplate.update(sql, map);
+
+       System.out.println("季度為:"+quarter+" 更新金額則是:"+totalAmount);
 
    }
 
     @Override
     public FinancialStatement getStatementByQuarter(Integer quarter){
-      String sql =  " SELECT * FROM financial_statement WHERE quarter = :quarter  ";
+      String sql =  " SELECT * FROM financial_statement WHERE quarter = :quarter ";
       Map<String, Object> map = new HashMap<>();
-      map.put("quarter", quarter);
+      map.put("quarter",quarter);
 
       List<FinancialStatement> statementList = namedParameterJdbcTemplate.query(sql, map, new FinancialStatementRowMapper());
       if(statementList.size()>0){

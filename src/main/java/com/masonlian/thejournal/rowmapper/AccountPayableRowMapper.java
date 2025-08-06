@@ -11,6 +11,7 @@ public class AccountPayableRowMapper implements RowMapper<AccountPayable> {
     public AccountPayable mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         AccountPayable accountPayable = new AccountPayable();
+
         accountPayable.setPayableId(rs.getInt("payable_id"));
         accountPayable.setSupplier(rs.getString("supplier"));
         accountPayable.setMaterialEventId(rs.getInt("material_event_id"));

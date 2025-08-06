@@ -3,6 +3,7 @@ package com.masonlian.thejournal.service;
 import com.masonlian.thejournal.dto.QueryPara;
 import com.masonlian.thejournal.dto.request.CreateLaborRoleRequest;
 import com.masonlian.thejournal.dto.request.LaborEventQueryRequest;
+import com.masonlian.thejournal.model.Attendance;
 import com.masonlian.thejournal.model.LaborRole;
 import com.masonlian.thejournal.model.Salary;
 
@@ -18,5 +19,6 @@ public interface HumanResourceService {
     void updateExpectedSalary(Salary laborMonthSalary);
     void updateActualSalary(Salary laborMonthSalary);
 
+    List<Attendance> getAttendanceRecord(String name);
     List<Salary> getSalaries(QueryPara  employeeQueryPara);
 }

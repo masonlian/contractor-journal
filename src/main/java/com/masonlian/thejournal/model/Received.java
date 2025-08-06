@@ -8,6 +8,14 @@ import java.sql.Timestamp;
 
 //敏感資訊操作需加密
 public class Received {
+
+
+    public Integer projectId;
+    public Integer received_id;
+    public String name;
+    public BigDecimal receivedPayment;
+    public Timestamp receivedTime;
+
     public Integer getProjectId() {
         return projectId;
     }
@@ -15,13 +23,6 @@ public class Received {
     public void setProjectId(Integer projectId) {
         this.projectId = projectId;
     }
-
-    public Integer projectId;
-    public Integer received_id;
-    public String name;
-    public BigDecimal receivedPayment;
-    public ConstructionCategory constructionCategory;
-    public Timestamp receivedTime;
 
     public Integer getReceived_id() {
         return received_id;
@@ -45,14 +46,6 @@ public class Received {
 
     public void setReceivedPayment(BigDecimal receivedPayment) {
         this.receivedPayment = receivedPayment;
-    }
-
-    public ConstructionCategory getConstructionCategory() {
-        return constructionCategory;
-    }
-
-    public void setConstructionCategory(ConstructionCategory constructionCategory) {
-        this.constructionCategory = constructionCategory;
     }
 
     public Timestamp getReceivedTime() {

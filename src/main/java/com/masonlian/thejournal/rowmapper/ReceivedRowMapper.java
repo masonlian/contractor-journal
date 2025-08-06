@@ -16,8 +16,6 @@ public class ReceivedRowMapper implements RowMapper<Received> {
         received.setName(rs.getString("name"));
         received.setProjectId(rs.getInt("project_id"));
 
-        ConstructionCategory constructionCategory = ConstructionCategory.valueOf(rs.getString("category"));
-        received.setConstructionCategory(constructionCategory);
 
         received.setReceivedPayment(rs.getBigDecimal("received_payment"));
         received.setReceivedTime(rs.getTimestamp("received_time"));

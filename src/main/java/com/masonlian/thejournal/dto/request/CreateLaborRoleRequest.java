@@ -2,6 +2,7 @@ package com.masonlian.thejournal.dto.request;
 
 import com.masonlian.thejournal.constant.Level;
 import com.masonlian.thejournal.constant.Role;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -13,6 +14,7 @@ public class CreateLaborRoleRequest {
     private String imageUrl;
     private String phoneNumber;
     private Level level;
+    @NotNull
     private Role role;
 
     public String getEmail() {
